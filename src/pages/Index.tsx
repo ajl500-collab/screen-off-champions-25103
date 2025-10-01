@@ -1,16 +1,33 @@
+import { useNavigate } from "react-router-dom";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
-import Leaderboard from "@/components/Leaderboard";
 import EfficiencyInsights from "@/components/EfficiencyInsights";
 import Tips from "@/components/Tips";
 import CTA from "@/components/CTA";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen">
       <Hero />
+      
+      {/* Quick Access to App */}
+      <section className="py-12 bg-card border-y border-border">
+        <div className="container mx-auto px-4 text-center">
+          <Button 
+            size="lg" 
+            onClick={() => navigate("/dashboard")}
+            className="text-lg px-8"
+          >
+            Open App <ArrowRight className="ml-2 w-5 h-5" />
+          </Button>
+        </div>
+      </section>
+
       <Features />
-      <Leaderboard />
       <EfficiencyInsights />
       <Tips />
       <CTA />

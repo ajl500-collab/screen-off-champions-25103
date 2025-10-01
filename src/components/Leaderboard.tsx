@@ -11,33 +11,8 @@ const mockLeaderboard = [
 
 const Leaderboard = () => {
   return (
-    <section className="py-24 relative">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Live <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Leaderboard</span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            See who's crushing it and who's getting crushed. Updated in real-time, stakes are high.
-          </p>
-        </div>
-        
-        <div className="max-w-4xl mx-auto">
-          {/* Weekly challenge header */}
-          <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/20 rounded-2xl p-6 mb-6">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div>
-                <h3 className="text-2xl font-bold mb-1">Week 23 Challenge</h3>
-                <p className="text-muted-foreground">Squad Showdown • Ends in 3d 14h</p>
-              </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold text-primary">83</div>
-                <div className="text-sm text-muted-foreground">Teams Competing</div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Leaderboard table */}
+    <div>
+      {/* Leaderboard table */}
           <div className="bg-card border border-border rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -118,24 +93,7 @@ const Leaderboard = () => {
             </div>
           </div>
           
-          {/* Bottom stats */}
-          <div className="grid grid-cols-3 gap-4 mt-6">
-            <div className="bg-card border border-border rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-success">-34%</div>
-              <div className="text-sm text-muted-foreground">Avg Reduction</div>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-primary">4h 12m</div>
-              <div className="text-sm text-muted-foreground">Avg Screen Time</div>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-accent">247</div>
-              <div className="text-sm text-muted-foreground">Players Active</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    </div>
   );
 };
 
