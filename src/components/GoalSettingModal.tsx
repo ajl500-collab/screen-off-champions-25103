@@ -20,15 +20,6 @@ const GoalSettingModal = ({ isOpen, onClose, onGoalCreated, isPremium = false }:
   const { toast } = useToast();
 
   const generateAIPlan = async () => {
-    if (!isPremium) {
-      toast({
-        title: "Premium Feature",
-        description: "AI-powered plans are only available for premium users",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (!goalText.trim()) {
       toast({
         title: "Goal Required",
@@ -135,38 +126,24 @@ const GoalSettingModal = ({ isOpen, onClose, onGoalCreated, isPremium = false }:
             />
           </div>
 
-          {isPremium && (
-            <Button
-              onClick={generateAIPlan}
-              disabled={isGenerating || !goalText.trim()}
-              className="w-full"
-              variant="outline"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Generating AI Plan...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Generate AI-Powered Plan
-                </>
-              )}
-            </Button>
-          )}
-
-          {!isPremium && (
-            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-5 h-5 text-primary" />
-                <span className="font-semibold text-primary">Premium Feature</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Upgrade to premium to get AI-powered personalized plans and insights
-              </p>
-            </div>
-          )}
+          <Button
+            onClick={generateAIPlan}
+            disabled={isGenerating || !goalText.trim()}
+            className="w-full"
+            variant="outline"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Generating AI Plan...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 mr-2" />
+                Generate AI-Powered Plan
+              </>
+            )}
+          </Button>
 
           {aiPlan && (
             <div className="bg-muted p-4 rounded-lg">

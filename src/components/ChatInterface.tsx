@@ -2,11 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Send, Image as ImageIcon, Mic, Smile } from "lucide-react";
+import { Send, Image as ImageIcon, Mic } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import EmojiPicker from "./EmojiPicker";
+import GifPicker from "./GifPicker";
 
 interface Message {
   id: string;
@@ -189,12 +191,106 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || !currentUserId) return;
 
-    toast({
-      title: "Coming Soon",
-      description: "Image and file uploads will be available soon!",
-    });
+    setIsLoading(true);
+
+    try {
+      // Upload to a temporary storage location (you'd set up a proper bucket)
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${currentUserId}/${fileName}`;
+
+      toast({
+        title: "Uploading...",
+        description: "Your image is being uploaded",
+      });
+
+      // For now, use a data URL as placeholder
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        
+        const messageData: any = {
+          user_id: currentUserId,
+          content: file.name,
+          message_type: "image",
+          chat_type: activeTab,
+          media_url: base64String,
+        };
+
+        if (activeTab === "team" && currentTeamId) {
+          messageData.team_id = currentTeamId;
+        }
+
+        const { error } = await (supabase as any)
+          .from("chat_messages")
+          .insert([messageData]);
+
+        if (error) {
+          toast({
+            title: "Error",
+            description: "Failed to send image",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Success",
+            description: "Image sent successfully",
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      toast({
+        title: "Error",
+        description: "Failed to upload image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEmojiSelect = (emoji: string) => {
+    setNewMessage(prev => prev + emoji);
+  };
+
+  const handleGifSelect = async (gifUrl: string) => {
+    if (!currentUserId) return;
+
+    setIsLoading(true);
+
+    const messageData: any = {
+      user_id: currentUserId,
+      content: "GIF",
+      message_type: "gif",
+      chat_type: activeTab,
+      media_url: gifUrl,
+    };
+
+    if (activeTab === "team" && currentTeamId) {
+      messageData.team_id = currentTeamId;
+    }
+
+    try {
+      const { error } = await (supabase as any)
+        .from("chat_messages")
+        .insert([messageData]);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to send GIF",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error sending GIF:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVoiceMessage = () => {
@@ -349,12 +445,11 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
           >
             <ImageIcon className="w-5 h-5" />
           </Button>
+          <GifPicker onGifSelect={handleGifSelect} />
           <Button variant="ghost" size="icon" onClick={handleVoiceMessage}>
             <Mic className="w-5 h-5" />
           </Button>
-          <Button variant="ghost" size="icon">
-            <Smile className="w-5 h-5" />
-          </Button>
+          <EmojiPicker onEmojiSelect={handleEmojiSelect} />
           <Input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
