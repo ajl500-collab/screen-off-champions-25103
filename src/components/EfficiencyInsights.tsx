@@ -143,9 +143,12 @@ const EfficiencyInsights = () => {
             <p className="text-muted-foreground mb-4">
               Master the algorithm. Use your phone smarter, not less.
             </p>
-            <button className="text-primary font-semibold hover:underline">
-              Start tracking your efficiency →
-            </button>
+          <button 
+            onClick={() => window.location.href = "/auth"}
+            className="text-primary font-semibold hover:underline text-lg"
+          >
+            Start tracking your efficiency →
+          </button>
           </div>
         </div>
       </div>

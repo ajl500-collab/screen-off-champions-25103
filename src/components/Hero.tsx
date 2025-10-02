@@ -1,7 +1,18 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-image.jpg";
+import { Trophy, Users, Target, Zap } from "lucide-react";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  
+  const scrollToHowItWorks = () => {
+    const element = document.getElementById("how-it-works");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+  
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background gradient */}
@@ -37,23 +48,21 @@ const Hero = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-primary/20 transition-all">
+              <Button 
+                size="lg" 
+                onClick={() => navigate("/auth")}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-primary/20 transition-all"
+              >
                 Start Competing
               </Button>
-              <Button size="lg" variant="outline" className="border-primary/30 hover:bg-primary/10 font-semibold px-8 py-6 text-lg rounded-xl">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                onClick={scrollToHowItWorks}
+                className="border-primary/30 hover:bg-primary/10 font-semibold px-8 py-6 text-lg rounded-xl"
+              >
                 How It Works
               </Button>
-            </div>
-            
-            <div className="flex items-center gap-8 justify-center lg:justify-start text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                <span className="text-muted-foreground">1,247 Active Players</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-muted-foreground">83 Teams Battling</span>
-              </div>
             </div>
           </div>
           
@@ -66,6 +75,39 @@ const Hero = () => {
                 className="w-full h-auto"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+            </div>
+            
+            {/* Info bubbles around phone */}
+            <div className="absolute -left-8 top-1/4 bg-card border border-primary/30 rounded-xl p-3 shadow-xl backdrop-blur-sm max-w-[200px] animate-float">
+              <div className="flex items-center gap-2 mb-1">
+                <Trophy className="w-4 h-4 text-primary" />
+                <div className="text-xs font-bold">Weekly Battles</div>
+              </div>
+              <div className="text-xs text-muted-foreground">Compete solo, duo, or in squads</div>
+            </div>
+            
+            <div className="absolute -right-8 top-1/3 bg-card border border-success/30 rounded-xl p-3 shadow-xl backdrop-blur-sm max-w-[200px] animate-float" style={{ animationDelay: '0.5s' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <Target className="w-4 h-4 text-success" />
+                <div className="text-xs font-bold">Track Efficiency</div>
+              </div>
+              <div className="text-xs text-muted-foreground">Productive vs unproductive time</div>
+            </div>
+            
+            <div className="absolute -left-8 bottom-1/4 bg-card border border-accent/30 rounded-xl p-3 shadow-xl backdrop-blur-sm max-w-[200px] animate-float" style={{ animationDelay: '1s' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <Zap className="w-4 h-4 text-accent" />
+                <div className="text-xs font-bold">Live Rankings</div>
+              </div>
+              <div className="text-xs text-muted-foreground">Watch your position change in real-time</div>
+            </div>
+            
+            <div className="absolute -right-8 bottom-1/3 bg-card border border-destructive/30 rounded-xl p-3 shadow-xl backdrop-blur-sm max-w-[200px] animate-float" style={{ animationDelay: '1.5s' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <Users className="w-4 h-4 text-destructive" />
+                <div className="text-xs font-bold">Friend Groups</div>
+              </div>
+              <div className="text-xs text-muted-foreground">Losers get meme'd, winners get glory</div>
             </div>
             
             {/* Floating stat cards */}

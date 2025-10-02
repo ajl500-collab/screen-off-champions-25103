@@ -3,6 +3,7 @@ import { User, Trophy, Crown, Settings, Sparkles, TrendingDown } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import Header from "@/components/Header";
 
 const mockProfile = {
   name: "Alex Chen",
@@ -34,6 +35,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      <Header />
       {/* Header */}
       <div className="bg-card border-b border-border px-4 py-6">
         <div className="flex items-center justify-between mb-6">

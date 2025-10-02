@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TrendingDown, TrendingUp, Zap, Trophy } from "lucide-react";
+import Header from "@/components/Header";
 
 const mockDashboardData = {
   today: {
@@ -51,6 +52,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      <Header />
       {/* Header */}
       <div className="bg-card border-b border-border px-4 py-6">
         <div className="flex items-center justify-between mb-4">

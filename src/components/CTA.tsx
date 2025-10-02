@@ -37,6 +37,7 @@ const CTA = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Button 
                   size="lg" 
+                  onClick={() => window.location.href = "/auth"}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-primary/20 transition-all group"
                 >
                   Join the Competition

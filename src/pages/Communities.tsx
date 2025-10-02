@@ -3,6 +3,7 @@ import { Trophy, Users, Plus, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Leaderboard from "@/components/Leaderboard";
+import Header from "@/components/Header";
 
 const mockCommunities = [
   {
@@ -34,6 +35,7 @@ const Communities = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      <Header />
       {/* Header */}
       <div className="bg-card border-b border-border px-4 py-6">
         <h1 className="text-2xl font-bold mb-4">Communities</h1>

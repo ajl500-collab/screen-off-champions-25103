@@ -1,4 +1,4 @@
-import { Smartphone, Bell, Target, Coffee } from "lucide-react";
+import { Smartphone, Bell, Target, Coffee, Moon, Pocket } from "lucide-react";
 
 const tips = [
   {
@@ -21,6 +21,16 @@ const tips = [
     title: "Phone-Free Mornings",
     tip: "Don't check your phone for the first hour after waking. Game-changer for productivity.",
   },
+  {
+    icon: Moon,
+    title: "Night Mode Boundaries",
+    tip: "Set a hard cutoff time for phone use. No screens 1 hour before bed improves sleep quality by 35%.",
+  },
+  {
+    icon: Pocket,
+    title: "Out of Sight, Out of Mind",
+    tip: "Keep your phone in another room while working. Physical distance is the ultimate focus hack.",
+  },
 ];
 
 const Tips = () => {
@@ -36,7 +46,7 @@ const Tips = () => {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {tips.map((item, index) => {
             const Icon = item.icon;
             return (
@@ -64,7 +74,10 @@ const Tips = () => {
           <p className="text-muted-foreground mb-4">
             Want more personalized tips based on your usage?
           </p>
-          <button className="text-primary font-semibold hover:underline">
+          <button 
+            onClick={() => window.location.href = "/auth"}
+            className="text-primary font-semibold hover:underline"
+          >
             Join now to unlock AI-powered insights →
           </button>
         </div>

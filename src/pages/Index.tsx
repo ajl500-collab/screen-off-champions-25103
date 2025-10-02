@@ -4,6 +4,7 @@ import Features from "@/components/Features";
 import EfficiencyInsights from "@/components/EfficiencyInsights";
 import Tips from "@/components/Tips";
 import CTA from "@/components/CTA";
+import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
@@ -12,6 +13,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      <Header />
       <Hero />
       
       {/* Quick Access to App */}
