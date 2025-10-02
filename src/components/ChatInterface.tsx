@@ -303,8 +303,11 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b flex items-center justify-between">
-        <h2 className="text-xl font-bold">Chat</h2>
+      <div className="p-4 border-b flex items-center justify-between bg-gradient-to-r from-primary/5 to-accent/5">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+          <h2 className="text-xl font-bold">Chat</h2>
+        </div>
         <Button variant="ghost" onClick={onClose}>
           Close
         </Button>
@@ -345,20 +348,20 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
                       {message.profiles?.display_name || "User"}
                     </span>
                     <div
-                      className={`rounded-lg px-4 py-2 max-w-[70vw] ${
+                      className={`rounded-2xl px-4 py-3 max-w-[70vw] shadow-sm ${
                         message.user_id === currentUserId
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted"
+                          ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground"
+                          : "bg-card border border-border"
                       }`}
                     >
                       {message.media_url ? (
                         <img
                           src={message.media_url}
                           alt="Shared media"
-                          className="rounded max-w-full"
+                          className="rounded-lg max-w-full"
                         />
                       ) : (
-                        <p className="text-sm">{message.content}</p>
+                        <p className="text-sm leading-relaxed">{message.content}</p>
                       )}
                     </div>
                     <span className="text-xs text-muted-foreground mt-1">
@@ -400,20 +403,20 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
                         {message.profiles?.display_name || "User"}
                       </span>
                       <div
-                        className={`rounded-lg px-4 py-2 max-w-[70vw] ${
+                        className={`rounded-2xl px-4 py-3 max-w-[70vw] shadow-sm ${
                           message.user_id === currentUserId
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted"
+                            ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground"
+                            : "bg-card border border-border"
                         }`}
                       >
                         {message.media_url ? (
                           <img
                             src={message.media_url}
                             alt="Shared media"
-                            className="rounded max-w-full"
+                            className="rounded-lg max-w-full"
                           />
                         ) : (
-                          <p className="text-sm">{message.content}</p>
+                          <p className="text-sm leading-relaxed">{message.content}</p>
                         )}
                       </div>
                       <span className="text-xs text-muted-foreground mt-1">
@@ -429,42 +432,53 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
       </Tabs>
 
       {/* Input Area */}
-      <div className="p-4 border-t">
-        <div className="flex gap-2 items-center">
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept="image/*,video/*"
-            onChange={handleFileUpload}
-          />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <ImageIcon className="w-5 h-5" />
-          </Button>
-          <GifPicker onGifSelect={handleGifSelect} />
-          <Button variant="ghost" size="icon" onClick={handleVoiceMessage}>
-            <Mic className="w-5 h-5" />
-          </Button>
-          <EmojiPicker onEmojiSelect={handleEmojiSelect} />
-          <Input
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-            disabled={isLoading || (activeTab === "team" && !currentTeamId)}
-            className="flex-1"
-          />
-          <Button
-            onClick={sendMessage}
-            disabled={isLoading || !newMessage.trim() || (activeTab === "team" && !currentTeamId)}
-            size="icon"
-          >
-            <Send className="w-5 h-5" />
-          </Button>
+      <div className="p-4 border-t bg-card/50 backdrop-blur-sm">
+        <div className="bg-muted/50 rounded-2xl p-2 border border-border/50">
+          <div className="flex gap-2 items-center">
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*,video/*"
+              onChange={handleFileUpload}
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => fileInputRef.current?.click()}
+              className="hover:bg-primary/10 hover:text-primary transition-colors"
+              title="Upload Image"
+            >
+              <ImageIcon className="w-5 h-5" />
+            </Button>
+            <GifPicker onGifSelect={handleGifSelect} />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleVoiceMessage}
+              className="hover:bg-primary/10 hover:text-primary transition-colors"
+              title="Voice Message"
+            >
+              <Mic className="w-5 h-5" />
+            </Button>
+            <EmojiPicker onEmojiSelect={handleEmojiSelect} />
+            <Input
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type a message..."
+              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+              disabled={isLoading || (activeTab === "team" && !currentTeamId)}
+              className="flex-1 border-0 bg-background/50 focus-visible:ring-1 focus-visible:ring-primary"
+            />
+            <Button
+              onClick={sendMessage}
+              disabled={isLoading || !newMessage.trim() || (activeTab === "team" && !currentTeamId)}
+              size="icon"
+              className="bg-primary hover:bg-primary/90 transition-all hover:scale-105"
+            >
+              <Send className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
