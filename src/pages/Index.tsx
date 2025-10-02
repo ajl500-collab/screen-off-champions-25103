@@ -39,7 +39,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-center md:text-left">
-              <h3 className="text-xl font-bold mb-1">ScreenSlayer</h3>
+              <h3 className="text-xl font-bold mb-1">Screen<span className="italic">VS</span></h3>
               <p className="text-sm text-muted-foreground">Turn screen time into competition.</p>
             </div>
             
@@ -52,7 +52,7 @@ const Index = () => {
           </div>
           
           <div className="text-center mt-8 text-sm text-muted-foreground">
-            © 2025 ScreenSlayer. All rights reserved. Made for the squad.
+            © 2025 Screen<span className="italic">VS</span>. All rights reserved. Made for the squad.
           </div>
         </div>
       </footer>

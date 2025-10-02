@@ -17,7 +17,7 @@ const Header = () => {
             className="w-12 h-12 object-contain"
           />
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Screen VS
+            Screen<span className="italic">VS</span>
           </h1>
         </div>
       </div>

@@ -57,9 +57,9 @@ const Hero = () => {
               </Button>
               <Button 
                 size="lg" 
-                variant="outline" 
+                variant="outline"
+                className="text-lg border-primary/30 hover:bg-primary/10"
                 onClick={scrollToHowItWorks}
-                className="border-primary/30 hover:bg-primary/10 font-semibold px-8 py-6 text-lg rounded-xl"
               >
                 How It Works
               </Button>

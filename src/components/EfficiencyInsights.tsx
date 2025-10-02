@@ -36,7 +36,7 @@ const EfficiencyInsights = () => {
             
             <div className="space-y-4 text-muted-foreground">
               <p>
-                Every app you use is categorized and weighted based on productivity:
+                Every app you use is categorized based on productivity:
               </p>
               
               <div className="grid md:grid-cols-3 gap-4 my-6">
@@ -45,8 +45,7 @@ const EfficiencyInsights = () => {
                     <TrendingUp className="w-5 h-5 text-success" />
                     <h4 className="font-bold text-success">Productive</h4>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-2">LinkedIn, WSJ, Notion, Kindle</p>
-                  <div className="text-2xl font-bold text-success">+150% weight</div>
+                  <p className="text-sm text-muted-foreground">Apps that add value: LinkedIn, WSJ, Notion, Kindle, educational platforms</p>
                 </div>
                 
                 <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-4">
@@ -54,8 +53,7 @@ const EfficiencyInsights = () => {
                     <TrendingDown className="w-5 h-5 text-destructive" />
                     <h4 className="font-bold text-destructive">Unproductive</h4>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-2">TikTok, Instagram, Games</p>
-                  <div className="text-2xl font-bold text-destructive">-150% weight</div>
+                  <p className="text-sm text-muted-foreground">Time-wasting apps: TikTok, Instagram, games, endless scrolling</p>
                 </div>
                 
                 <div className="bg-muted/30 border border-border rounded-xl p-4">
@@ -63,17 +61,13 @@ const EfficiencyInsights = () => {
                     <div className="w-5 h-5 rounded bg-muted" />
                     <h4 className="font-bold">Utility</h4>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-2">Messages, Clock, Maps</p>
-                  <div className="text-2xl font-bold text-muted-foreground">0% weight</div>
+                  <p className="text-sm text-muted-foreground">Essential tools: Messages, Clock, Maps, Phone, Settings</p>
                 </div>
               </div>
               
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                <p className="font-mono text-sm">
-                  <strong>Efficiency Score</strong> = (Weighted Time / Total Time) × 100
-                </p>
-                <p className="text-sm mt-2">
-                  Positive scores = more productive usage. Negative scores = dominated by distractions.
+                <p className="text-sm">
+                  Your efficiency is calculated using a weighted algorithm. Productive apps boost your score significantly, unproductive apps drag it down, and utility apps remain neutral.
                 </p>
               </div>
             </div>
