@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CTA = () => {
+  const navigate = useNavigate();
+  
   return (
     <section className="py-24 relative overflow-hidden">
       {/* Background gradient */}
@@ -46,6 +49,7 @@ const CTA = () => {
                 <Button 
                   size="lg" 
                   variant="outline" 
+                  onClick={() => navigate("/demo")}
                   className="border-primary/30 hover:bg-primary/10 font-semibold px-8 py-6 text-lg rounded-xl"
                 >
                   View Demo

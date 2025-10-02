@@ -63,6 +63,14 @@ const Hero = () => {
               >
                 How It Works
               </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="text-lg border-primary/30 hover:bg-primary/10"
+                onClick={() => navigate("/demo")}
+              >
+                View Demo
+              </Button>
             </div>
           </div>
           
