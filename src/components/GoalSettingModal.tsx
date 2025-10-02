@@ -65,27 +65,54 @@ const GoalSettingModal = ({ isOpen, onClose, onGoalCreated, isPremium = false }:
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    console.log("Attempting to save goal...");
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError) {
+      console.error("Auth error:", authError);
+      toast({
+        title: "Authentication Error",
+        description: "Please sign in to save goals",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!user) {
+      console.error("No user found");
+      toast({
+        title: "Not Signed In",
+        description: "Please sign in to save goals",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    console.log("User authenticated:", user.id);
 
     try {
-      const { error } = await (supabase as any).from("user_goals").insert([
-        {
-          user_id: user.id,
-          goal_text: goalText,
-          ai_plan: aiPlan || null,
-        },
-      ]);
+      const goalData = {
+        user_id: user.id,
+        goal_text: goalText,
+        ai_plan: aiPlan || null,
+      };
+      
+      console.log("Inserting goal:", goalData);
+      
+      const { data, error } = await supabase.from("user_goals").insert([goalData]).select();
 
       if (error) {
+        console.error("Database error:", error);
         toast({
           title: "Error",
-          description: "Failed to save goal",
+          description: `Failed to save goal: ${error.message}`,
           variant: "destructive",
         });
         return;
       }
 
+      console.log("Goal saved successfully:", data);
+      
       toast({
         title: "Goal Saved",
         description: "Your goal has been saved successfully!",
@@ -99,7 +126,7 @@ const GoalSettingModal = ({ isOpen, onClose, onGoalCreated, isPremium = false }:
       console.error("Error saving goal:", error);
       toast({
         title: "Error",
-        description: "Failed to save goal",
+        description: error instanceof Error ? error.message : "Failed to save goal",
         variant: "destructive",
       });
     }
