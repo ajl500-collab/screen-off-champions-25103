@@ -22,6 +22,8 @@ serve(async (req) => {
     }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    console.log('LOVABLE_API_KEY exists:', !!LOVABLE_API_KEY);
+    console.log('LOVABLE_API_KEY length:', LOVABLE_API_KEY?.length);
     
     if (!LOVABLE_API_KEY) {
       console.error('LOVABLE_API_KEY is not configured');
