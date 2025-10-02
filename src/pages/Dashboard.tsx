@@ -5,6 +5,8 @@ import Header from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useScreenTimeTracking } from "@/hooks/useScreenTimeTracking";
+import { ManualTimeEntry } from "@/components/ManualTimeEntry";
 
 const mockDashboardData = {
   today: {
@@ -59,7 +61,35 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const data = mockDashboardData[period];
+  
+  const { data: realData, loading } = useScreenTimeTracking(user?.id, period);
+  
+  // Use real data if available, fallback to mock
+  const hasRealData = realData && realData.totalMinutes > 0;
+  const data = hasRealData ? {
+    totalTime: `${Math.floor(realData.totalMinutes / 60)}h ${realData.totalMinutes % 60}m`,
+    totalTimeMinutes: realData.totalMinutes,
+    efficientTime: `${Math.floor(realData.efficientMinutes / 60)}h ${realData.efficientMinutes % 60}m`,
+    efficientTimeMinutes: realData.efficientMinutes,
+    inefficientTime: `${Math.floor(realData.inefficientMinutes / 60)}h ${realData.inefficientMinutes % 60}m`,
+    inefficientTimeMinutes: realData.inefficientMinutes,
+    utilityTime: `${Math.floor(realData.utilityMinutes / 60)}h ${realData.utilityMinutes % 60}m`,
+    utilityTimeMinutes: realData.utilityMinutes,
+    efficiencyScore: realData.efficiencyScore,
+    efficiencyPercentage: Math.max(0, Math.min(100, 50 + realData.efficiencyScore)),
+    productivityPercentage: Math.round((realData.efficientMinutes / Math.max(realData.totalMinutes, 1)) * 100),
+    rank: 3,
+    change: -12,
+    apps: realData.apps.map(app => ({
+      name: app.app_name,
+      time: `${Math.floor(app.time_spent_minutes / 60)}h ${app.time_spent_minutes % 60}m`,
+      category: app.efficiency_multiplier && app.efficiency_multiplier > 0 ? 'productive' : 
+                app.efficiency_multiplier && app.efficiency_multiplier < 0 ? 'unproductive' : 'utility',
+      efficiency: app.efficiency_multiplier ? 
+        `${app.efficiency_multiplier > 0 ? '+' : ''}${Math.round(app.time_spent_minutes * app.efficiency_multiplier)}m` : '0m',
+      actualMinutes: app.time_spent_minutes
+    }))
+  } : mockDashboardData[period];
 
   useEffect(() => {
     // Check authentication
@@ -100,10 +130,18 @@ const Dashboard = () => {
       {/* Header */}
       <div className="bg-card border-b border-border px-4 py-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
-            <Trophy className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-primary">#{data.rank}</span>
+          <div>
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+            {!hasRealData && (
+              <p className="text-xs text-muted-foreground mt-1">Demo data - Add your time to see real stats</p>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <ManualTimeEntry />
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+              <Trophy className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-primary">#{data.rank}</span>
+            </div>
           </div>
         </div>
 

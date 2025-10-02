@@ -14,26 +14,30 @@ const Demo = () => {
       price: "$0",
       period: "forever",
       features: [
-        "Daily efficiency tracking",
-        "Basic leaderboard access",
+        "Basic efficiency tracking",
+        "Leaderboard access",
         "Community participation",
-        "Weekly insights",
-        "Up to 5 tracked apps"
+        "Up to 3 tracked apps",
+        "Daily insights"
       ]
     },
     premium: {
       name: "Premium",
-      price: "$9.99",
-      period: "per month",
+      price: "$19.99",
+      period: "per year",
       features: [
-        "Everything in Free",
-        "Unlimited app tracking",
-        "Advanced analytics & insights",
-        "Custom meme punishments",
-        "Priority support",
-        "Ad-free experience",
-        "Team challenges & tournaments",
-        "Historical data export"
+        "Unlimited Apps tracking",
+        "Intentional App-Switching (3s cooldown)",
+        "Breathing Exercise with custom duration & location",
+        "Adult Content Detox & impulse tracking",
+        "\"Don't Get Lost\" smart notifications",
+        "Time Tracking with detailed analytics",
+        "Website blocking (10+ sites)",
+        "Strict Block for apps & websites",
+        "Desktop Browser Extension (Chrome)",
+        "Advanced efficiency insights",
+        "Historical data export",
+        "Ad-free experience"
       ]
     }
   };
@@ -53,69 +57,8 @@ const Demo = () => {
           </p>
         </div>
 
-        {/* Interactive Demo Section */}
-        <div className="max-w-6xl mx-auto mb-16">
-          <div className="bg-card border border-border rounded-2xl p-8">
-            <h2 className="text-2xl font-bold mb-6">Live Demo Dashboard</h2>
-            
-            {/* Demo Stats */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-primary/10 border border-primary/20 rounded-xl p-6">
-                <div className="text-sm text-muted-foreground mb-2">Your Rank</div>
-                <div className="text-4xl font-bold text-primary">#3</div>
-                <div className="text-xs text-success mt-1">↑ 2 spots today</div>
-              </div>
-              
-              <div className="bg-success/10 border border-success/20 rounded-xl p-6">
-                <div className="text-sm text-muted-foreground mb-2">Efficiency Score</div>
-                <div className="text-4xl font-bold text-success">+45</div>
-                <div className="text-xs text-muted-foreground mt-1">68% efficient usage</div>
-              </div>
-              
-              <div className="bg-accent/10 border border-accent/20 rounded-xl p-6">
-                <div className="text-sm text-muted-foreground mb-2">Screen Time</div>
-                <div className="text-4xl font-bold">3.2h</div>
-                <div className="text-xs text-success mt-1">↓ 45min vs yesterday</div>
-              </div>
-            </div>
-
-            {/* Demo Features */}
-            <div className="space-y-4">
-              <div className="border border-border rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold">Real-time Leaderboards</h4>
-                    <p className="text-sm text-muted-foreground">Compete with friends and communities</p>
-                  </div>
-                  <div className="text-2xl">🏆</div>
-                </div>
-              </div>
-              
-              <div className="border border-border rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold">Smart Notifications</h4>
-                    <p className="text-sm text-muted-foreground">Witty reminders to stay focused</p>
-                  </div>
-                  <div className="text-2xl">💬</div>
-                </div>
-              </div>
-              
-              <div className="border border-border rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold">Efficiency Algorithm</h4>
-                    <p className="text-sm text-muted-foreground">Not all screen time is equal</p>
-                  </div>
-                  <div className="text-2xl">⚡</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Subscription Plans */}
-        <div className="max-w-5xl mx-auto">
+        {/* Subscription Plans - Moved to Top */}
+        <div className="max-w-5xl mx-auto mb-16">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-2">Choose Your Plan</h2>
             <p className="text-muted-foreground">Start free, upgrade anytime</p>
@@ -176,7 +119,7 @@ const Demo = () => {
                 <div className="text-sm text-muted-foreground">{plans.premium.period}</div>
               </div>
 
-              <ul className="space-y-3 mb-6">
+              <ul className="space-y-3 mb-6 max-h-80 overflow-y-auto">
                 {plans.premium.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-2">
                     <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
@@ -197,8 +140,69 @@ const Demo = () => {
 
           <div className="text-center mt-8">
             <p className="text-sm text-muted-foreground">
-              All plans include 24/7 support and regular updates
+              7-day free trial • Cancel anytime • All plans include 24/7 support
             </p>
+          </div>
+        </div>
+
+        {/* Interactive Demo Section */}
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-card border border-border rounded-2xl p-8">
+            <h2 className="text-2xl font-bold mb-6">Live Demo Dashboard</h2>
+            
+            {/* Demo Stats */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-primary/10 border border-primary/20 rounded-xl p-6">
+                <div className="text-sm text-muted-foreground mb-2">Your Rank</div>
+                <div className="text-4xl font-bold text-primary">#3</div>
+                <div className="text-xs text-success mt-1">↑ 2 spots today</div>
+              </div>
+              
+              <div className="bg-success/10 border border-success/20 rounded-xl p-6">
+                <div className="text-sm text-muted-foreground mb-2">Efficiency Score</div>
+                <div className="text-4xl font-bold text-success">+45</div>
+                <div className="text-xs text-muted-foreground mt-1">68% efficient usage</div>
+              </div>
+              
+              <div className="bg-accent/10 border border-accent/20 rounded-xl p-6">
+                <div className="text-sm text-muted-foreground mb-2">Screen Time</div>
+                <div className="text-4xl font-bold">3.2h</div>
+                <div className="text-xs text-success mt-1">↓ 45min vs yesterday</div>
+              </div>
+            </div>
+
+            {/* Demo Features */}
+            <div className="space-y-4">
+              <div className="border border-border rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold">Real-time Leaderboards</h4>
+                    <p className="text-sm text-muted-foreground">Compete with friends and communities</p>
+                  </div>
+                  <div className="text-2xl">🏆</div>
+                </div>
+              </div>
+              
+              <div className="border border-border rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold">Smart Notifications</h4>
+                    <p className="text-sm text-muted-foreground">Witty reminders to stay focused</p>
+                  </div>
+                  <div className="text-2xl">💬</div>
+                </div>
+              </div>
+              
+              <div className="border border-border rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold">Efficiency Algorithm</h4>
+                    <p className="text-sm text-muted-foreground">Not all screen time is equal</p>
+                  </div>
+                  <div className="text-2xl">⚡</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
