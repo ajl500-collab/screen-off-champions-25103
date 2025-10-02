@@ -64,11 +64,16 @@ const Communities = () => {
     setCurrentUserId(user.id);
 
     // Get user profile info
-    const { data: profile } = await (supabase as any)
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('display_name, avatar_emoji')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
+    
+    if (profileError) {
+      console.error('Error fetching profile:', profileError);
+      return;
+    }
 
     const channel = supabase.channel('community-presence');
 

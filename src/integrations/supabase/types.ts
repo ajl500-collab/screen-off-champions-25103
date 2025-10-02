@@ -77,6 +77,13 @@ export type Database = {
             referencedRelation: "teams"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_chat_messages_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       competition_settings: {
@@ -269,6 +276,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_user_screen_time_app_categories"
+            columns: ["app_name"]
+            isOneToOne: false
+            referencedRelation: "app_categories"
+            referencedColumns: ["app_name"]
+          },
           {
             foreignKeyName: "user_screen_time_user_id_fkey"
             columns: ["user_id"]
