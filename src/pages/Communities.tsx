@@ -39,7 +39,7 @@ const Communities = () => {
     <>
       {showChat && <ChatInterface onClose={() => setShowChat(false)} />}
       
-      <div className="min-h-screen bg-background pb-20 pt-20">
+      <div className="min-h-screen bg-background pb-24 pt-20">
         <Header />
         {/* Header */}
         <div className="bg-card border-b border-border px-4 py-6">

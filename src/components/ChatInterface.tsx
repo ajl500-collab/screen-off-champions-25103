@@ -301,7 +301,7 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-background z-50 flex flex-col">
+    <div className="fixed inset-0 bg-background z-[60] flex flex-col">
       {/* Header */}
       <div className="p-4 border-b flex items-center justify-between bg-gradient-to-r from-primary/5 to-accent/5">
         <div className="flex items-center gap-2">
