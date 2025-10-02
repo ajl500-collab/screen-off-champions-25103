@@ -1,10 +1,14 @@
-import { useState } from "react";
-import { Trophy, Users, Plus, Code, MessageCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Trophy, Users, Plus, Code, MessageCircle, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Leaderboard from "@/components/Leaderboard";
 import Header from "@/components/Header";
 import ChatInterface from "@/components/ChatInterface";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const mockCommunities = [
   {
@@ -27,13 +31,79 @@ const mockCommunities = [
   }
 ];
 
+interface OnlineUser {
+  user_id: string;
+  display_name: string;
+  avatar_emoji: string;
+  online_at: string;
+}
+
 const Communities = () => {
   const [activeTab, setActiveTab] = useState<"my" | "join">("my");
   const [activeCommunity, setActiveCommunity] = useState(0);
   const [inviteCode, setInviteCode] = useState("");
   const [showChat, setShowChat] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const currentCommunity = mockCommunities[activeCommunity];
+
+  useEffect(() => {
+    initializePresence();
+    return () => {
+      // Cleanup presence when component unmounts
+      supabase.channel('community-presence').unsubscribe();
+    };
+  }, []);
+
+  const initializePresence = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setCurrentUserId(user.id);
+
+    // Get user profile info
+    const { data: profile } = await (supabase as any)
+      .from('profiles')
+      .select('display_name, avatar_emoji')
+      .eq('id', user.id)
+      .single();
+
+    const channel = supabase.channel('community-presence');
+
+    // Track presence state
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState<OnlineUser>();
+        const users: OnlineUser[] = [];
+        
+        Object.keys(state).forEach(key => {
+          const presences = state[key] as OnlineUser[];
+          if (presences && presences.length > 0) {
+            users.push(presences[0]);
+          }
+        });
+        
+        setOnlineUsers(users);
+      })
+      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+        console.log('User joined:', key, newPresences);
+      })
+      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+        console.log('User left:', key, leftPresences);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            user_id: user.id,
+            display_name: profile?.display_name || 'User',
+            avatar_emoji: profile?.avatar_emoji || '😊',
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
+  };
 
   return (
     <>
@@ -91,6 +161,78 @@ const Communities = () => {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Online Members Card */}
+            <div className="bg-card border border-border rounded-2xl p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold flex items-center gap-2">
+                  <Circle className="w-4 h-4 text-success fill-success animate-pulse" />
+                  Online Now ({onlineUsers.length})
+                </h3>
+                <span className="text-xs text-muted-foreground">
+                  Get them off their phones! 📱
+                </span>
+              </div>
+              
+              {onlineUsers.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground text-sm">
+                  No one is online right now
+                </div>
+              ) : (
+                <ScrollArea className="max-h-48">
+                  <div className="space-y-2">
+                    {onlineUsers.map((user) => (
+                      <div
+                        key={user.user_id}
+                        className={`flex items-center justify-between p-3 rounded-lg transition-all ${
+                          user.user_id === currentUserId
+                            ? 'bg-primary/10 border border-primary/20'
+                            : 'bg-muted/50 hover:bg-muted'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <Avatar className="w-10 h-10">
+                              <AvatarFallback className="text-lg">
+                                {user.avatar_emoji}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-success rounded-full border-2 border-card animate-pulse" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-sm">
+                              {user.display_name}
+                              {user.user_id === currentUserId && (
+                                <span className="ml-2 text-xs text-muted-foreground">(You)</span>
+                              )}
+                            </div>
+                            <div className="text-xs text-success flex items-center gap-1">
+                              <Circle className="w-2 h-2 fill-success" />
+                              Online
+                            </div>
+                          </div>
+                        </div>
+                        {user.user_id !== currentUserId && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs"
+                            onClick={() => {
+                              toast({
+                                title: "Reminder Sent! 📱",
+                                description: `Told ${user.display_name} to get off their phone!`,
+                              });
+                            }}
+                          >
+                            Remind 🔔
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
             </div>
 
             {/* Community Info Card */}
