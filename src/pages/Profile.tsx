@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { User, Trophy, Crown, Settings, Sparkles, TrendingDown } from "lucide-react";
+import { User, Trophy, Crown, Settings, Sparkles, TrendingDown, Plus, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
+import IndividualInsights from "@/components/IndividualInsights";
+import GoalSettingModal from "@/components/GoalSettingModal";
 
 const mockProfile = {
   name: "Alex Chen",
@@ -32,6 +35,8 @@ const mockProfile = {
 const Profile = () => {
   const [memeSwapEnabled, setMemeSwapEnabled] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [isPremium] = useState(false); // Set to true for premium users
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -93,10 +98,69 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Your Goals Section */}
+        <div className="mb-6">
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold flex items-center gap-2">
+                <Target className="w-5 h-5 text-primary" />
+                Your Goals
+              </h3>
+              <Button onClick={() => setIsGoalModalOpen(true)} size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Set Goal
+              </Button>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              Set personal goals and get AI-powered structured plans to achieve them.
+              {!isPremium && " (AI features available for premium users)"}
+            </p>
+          </div>
+        </div>
+
+        {/* Your Insights Section */}
+        <div className="mb-6">
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <h3 className="font-bold mb-4 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              Your Insights
+            </h3>
+            <Tabs defaultValue="overview" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="detailed">Detailed</TabsTrigger>
+              </TabsList>
+              <TabsContent value="overview">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/20">
+                    <div className="text-2xl font-bold text-primary">{mockProfile.stats.avgEfficiency}%</div>
+                    <div className="text-xs text-muted-foreground">Efficiency</div>
+                  </div>
+                  <div className="bg-success/5 rounded-xl p-4 text-center border border-success/20">
+                    <div className="text-2xl font-bold text-success">{mockProfile.stats.bestWeek}</div>
+                    <div className="text-xs text-muted-foreground">Best Week</div>
+                  </div>
+                  <div className="bg-accent/5 rounded-xl p-4 text-center border border-accent/20">
+                    <div className="text-2xl font-bold text-accent">{mockProfile.stats.currentStreak}</div>
+                    <div className="text-xs text-muted-foreground">Day Streak</div>
+                  </div>
+                  <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/20">
+                    <div className="text-2xl font-bold text-primary">{mockProfile.stats.totalWins}</div>
+                    <div className="text-xs text-muted-foreground">Total Wins</div>
+                  </div>
+                </div>
+              </TabsContent>
+              <TabsContent value="detailed">
+                <IndividualInsights screenTimeData={mockProfile} />
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+
         {/* Achievements */}
         <div className="mb-6">
           <h3 className="font-bold mb-3 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
+            <Trophy className="w-5 h-5 text-primary" />
             Achievements
           </h3>
           <div className="grid gap-3">
@@ -166,6 +230,16 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {/* Goal Setting Modal */}
+      <GoalSettingModal
+        isOpen={isGoalModalOpen}
+        onClose={() => setIsGoalModalOpen(false)}
+        onGoalCreated={() => {
+          setIsGoalModalOpen(false);
+        }}
+        isPremium={isPremium}
+      />
     </div>
   );
 };
