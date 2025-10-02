@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TrendingDown, TrendingUp, Zap, Trophy } from "lucide-react";
 import Header from "@/components/Header";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const mockDashboardData = {
   today: {
@@ -53,7 +56,35 @@ const mockDashboardData = {
 const Dashboard = () => {
   const [period, setPeriod] = useState<"today" | "week">("today");
   const [viewMode, setViewMode] = useState<"impact" | "actual">("impact");
+  const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const data = mockDashboardData[period];
+
+  useEffect(() => {
+    // Check authentication
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+      setUser(session.user);
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        navigate("/auth");
+      } else {
+        setUser(session.user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const getCategoryColor = (category: string) => {
     switch (category) {

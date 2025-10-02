@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,29 +7,118 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { Mail, Phone, Apple } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { toast } = useToast();
 
-  const handleAuth = async (e: React.FormEvent) => {
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard");
+      }
+    };
+    checkUser();
+  }, [navigate]);
+
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Implement authentication logic
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            username: email.split('@')[0],
+            display_name: email.split('@')[0]
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success!",
+        description: "Account created successfully. Redirecting...",
+      });
+
+      // Navigate to dashboard immediately since auto-confirm is enabled
       navigate("/dashboard");
-    }, 1000);
+    } catch (error: any) {
+      console.error("Sign up error:", error);
+      toast({
+        title: "Sign Up Failed",
+        description: error.message || "Failed to create account",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleGoogleAuth = () => {
-    // TODO: Implement Google auth
-    navigate("/dashboard");
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Welcome back!",
+        description: "Logged in successfully",
+      });
+
+      navigate("/dashboard");
+    } catch (error: any) {
+      console.error("Login error:", error);
+      toast({
+        title: "Login Failed",
+        description: error.message || "Failed to login",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleAppleAuth = () => {
-    // TODO: Implement Apple auth
-    navigate("/dashboard");
+  const handleGoogleAuth = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to sign in with Google",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAppleAuth = async () => {
+    toast({
+      title: "Coming Soon",
+      description: "Apple Sign In will be available soon",
+    });
   };
 
   return (
@@ -57,13 +146,15 @@ const Auth = () => {
                   <CardTitle className="text-xl mb-2">Create Account</CardTitle>
                   <CardDescription>Choose your signup method</CardDescription>
                   
-                  <form onSubmit={handleAuth} className="space-y-4 mt-6">
+                  <form onSubmit={handleSignUp} className="space-y-4 mt-6">
                     <div className="space-y-2">
-                      <Label htmlFor="signup-email">Email or Phone</Label>
+                      <Label htmlFor="signup-email">Email</Label>
                       <Input 
                         id="signup-email" 
-                        type="text" 
-                        placeholder="email@example.com or +1234567890"
+                        type="email" 
+                        placeholder="email@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                       />
                     </div>
@@ -73,8 +164,11 @@ const Auth = () => {
                       <Input 
                         id="signup-password" 
                         type="password" 
-                        placeholder="Create a strong password"
+                        placeholder="Create a strong password (min 6 characters)"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
+                        minLength={6}
                       />
                     </div>
                     
@@ -126,13 +220,15 @@ const Auth = () => {
                   <CardTitle className="text-xl mb-2">Welcome Back</CardTitle>
                   <CardDescription>Login to your account</CardDescription>
                   
-                  <form onSubmit={handleAuth} className="space-y-4 mt-6">
+                  <form onSubmit={handleLogin} className="space-y-4 mt-6">
                     <div className="space-y-2">
-                      <Label htmlFor="login-email">Email or Phone</Label>
+                      <Label htmlFor="login-email">Email</Label>
                       <Input 
                         id="login-email" 
-                        type="text" 
-                        placeholder="email@example.com or +1234567890"
+                        type="email" 
+                        placeholder="email@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                       />
                     </div>
@@ -143,6 +239,8 @@ const Auth = () => {
                         id="login-password" 
                         type="password" 
                         placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                       />
                     </div>

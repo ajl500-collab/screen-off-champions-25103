@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User, Trophy, Crown, Settings, Sparkles, TrendingDown, Plus, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,9 @@ import Header from "@/components/Header";
 import IndividualInsights from "@/components/IndividualInsights";
 import GoalSettingModal from "@/components/GoalSettingModal";
 import { SavedGoals } from "@/components/SavedGoals";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const mockProfile = {
   name: "Alex Chen",
@@ -37,7 +40,59 @@ const Profile = () => {
   const [memeSwapEnabled, setMemeSwapEnabled] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
-  const [isPremium] = useState(false); // Set to true for premium users
+  const [isPremium] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+      setUser(session.user);
+      
+      // Fetch profile data
+      const { data: profileData, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
+      
+      if (!error && profileData) {
+        setProfile(profileData);
+      }
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        navigate("/auth");
+      } else {
+        setUser(session.user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate("/auth");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to sign out",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-24 pt-20">
@@ -57,8 +112,8 @@ const Profile = () => {
             {mockProfile.avatar}
           </div>
           <div className="flex-1">
-            <h2 className="text-xl font-bold">{mockProfile.name}</h2>
-            <p className="text-sm text-muted-foreground mb-2">{mockProfile.username}</p>
+            <h2 className="text-xl font-bold">{profile?.display_name || user?.email?.split('@')[0] || "Player"}</h2>
+            <p className="text-sm text-muted-foreground mb-2">@{profile?.username || user?.email?.split('@')[0] || "user"}</p>
             <Button variant="outline" size="sm">Edit Profile</Button>
           </div>
         </div>
@@ -222,7 +277,7 @@ const Profile = () => {
             <Button variant="outline" className="w-full">
               Manage Meme Bank
             </Button>
-            <Button variant="outline" className="w-full text-destructive border-destructive/20">
+            <Button onClick={handleSignOut} variant="outline" className="w-full text-destructive border-destructive/20">
               Sign Out
             </Button>
           </div>
