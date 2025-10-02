@@ -1,195 +1,95 @@
-import { useState } from "react";
-import { Trophy, Users, Plus, Code } from "lucide-react";
+import { Trophy, Users, TrendingUp, Settings, MessageCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Leaderboard from "@/components/Leaderboard";
 import Header from "@/components/Header";
 
-const mockCommunities = [
-  {
-    id: 1,
-    name: "Squad Alpha",
-    members: 12,
-    teamType: "Trios",
-    weekEnds: "3d 14h",
-    yourRank: 2,
-    yourTeam: "Team Phoenix"
-  },
-  {
-    id: 2,
-    name: "College Bros",
-    members: 24,
-    teamType: "Squads",
-    weekEnds: "3d 14h",
-    yourRank: 7,
-    yourTeam: "The Grinders"
-  }
-];
-
 const Communities = () => {
-  const [activeTab, setActiveTab] = useState<"my" | "join">("my");
-  const [activeCommunity, setActiveCommunity] = useState(0);
-  const [inviteCode, setInviteCode] = useState("");
-
-  const currentCommunity = mockCommunities[activeCommunity];
+  const navigate = useNavigate();
+  
+  // Mock data for teams/communities
+  const currentWeekTheme = "Space Explorers";
+  const teamMode = "Trios"; // Can be "Solos", "Duos", or "Trios"
+  
+  const communities = [
+    { name: "Cosmic Navigators", members: 3, avgEfficiency: 78, rank: 2, emoji: "🚀", teamSize: 3 },
+    { name: "Stellar Voyagers", members: 3, avgEfficiency: 82, rank: 1, emoji: "⭐", teamSize: 3 },
+    { name: "Galaxy Wanderers", members: 2, avgEfficiency: 65, rank: 5, emoji: "🌌", teamSize: 2 },
+    { name: "Nebula Seekers", members: 3, avgEfficiency: 71, rank: 3, emoji: "☄️", teamSize: 3 },
+    { name: "Astro Pioneers", members: 3, avgEfficiency: 85, rank: 1, emoji: "🛸", teamSize: 3 },
+  ];
 
   return (
     <div className="min-h-screen bg-background pb-20">
       <Header />
       {/* Header */}
       <div className="bg-card border-b border-border px-4 py-6">
-        <h1 className="text-2xl font-bold mb-4">Communities</h1>
-        
-        {/* Toggle Tabs */}
-        <div className="flex gap-2">
-          <Button
-            variant={activeTab === "my" ? "default" : "outline"}
-            onClick={() => setActiveTab("my")}
-            className="flex-1"
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl font-bold">Communities</h1>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate('/settings')}
           >
-            <Users className="w-4 h-4 mr-2" />
-            My Communities
-          </Button>
-          <Button
-            variant={activeTab === "join" ? "default" : "outline"}
-            onClick={() => setActiveTab("join")}
-            className="flex-1"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Join/Create
+            <Settings className="w-5 h-5" />
           </Button>
         </div>
+        <p className="text-muted-foreground">Join forces and compete together</p>
       </div>
 
-      {activeTab === "my" ? (
-        <div className="px-4 py-6">
-          {/* Community Carousel */}
-          <div className="mb-6">
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {mockCommunities.map((comm, idx) => (
-                <button
-                  key={comm.id}
-                  onClick={() => setActiveCommunity(idx)}
-                  className={`flex-shrink-0 px-4 py-2 rounded-full font-semibold text-sm transition-all ${
-                    activeCommunity === idx
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {comm.name}
-                </button>
-              ))}
-            </div>
-          </div>
+      {/* Weekly Theme & Mode */}
+      <div className="px-4 py-4 space-y-3">
+        <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/20 rounded-2xl p-4">
+          <div className="text-sm text-muted-foreground mb-1">This Week's Theme</div>
+          <div className="text-2xl font-bold">{currentWeekTheme}</div>
+          <div className="text-sm text-primary mt-2">Competition Mode: {teamMode}</div>
+        </div>
 
-          {/* Community Info Card */}
-          <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/20 rounded-2xl p-6 mb-6">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h2 className="text-2xl font-bold mb-1">{currentCommunity.name}</h2>
-                <p className="text-sm text-muted-foreground">
-                  {currentCommunity.members} members • {currentCommunity.teamType}
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-xs text-muted-foreground">Week ends in</div>
-                <div className="text-lg font-bold text-primary">{currentCommunity.weekEnds}</div>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between bg-card/50 rounded-lg p-3 border border-border/50">
-              <div>
-                <div className="text-xs text-muted-foreground mb-1">Your Team</div>
-                <div className="font-semibold">{currentCommunity.yourTeam}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-xs text-muted-foreground mb-1">Your Rank</div>
-                <div className="flex items-center gap-1">
+        <Button 
+          onClick={() => navigate('/chat')}
+          className="w-full bg-accent hover:bg-accent/90"
+        >
+          <MessageCircle className="w-4 h-4 mr-2" />
+          Open Chat
+        </Button>
+      </div>
+
+      {/* Teams/Squads */}
+      <div className="px-4 pb-6">
+        <h2 className="text-xl font-bold mb-4">Teams This Week</h2>
+        
+        <div className="space-y-3">
+          {communities.map((community, idx) => (
+            <div 
+              key={idx}
+              className="bg-card border border-border rounded-2xl p-4 hover:border-primary/30 transition-all"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{community.emoji}</span>
+                  <div>
+                    <h3 className="font-semibold">{community.name}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {community.members} {community.teamSize === 1 ? 'player' : 'players'} • {community.teamSize === 1 ? 'Solo' : community.teamSize === 2 ? 'Duo' : 'Trio'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
                   <Trophy className="w-4 h-4 text-primary" />
-                  <span className="font-bold text-primary">#{currentCommunity.yourRank}</span>
+                  <span className="text-sm font-semibold text-primary">#{community.rank}</span>
                 </div>
               </div>
+              
+              <div className="flex items-center justify-between pt-3 border-t border-border mt-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <TrendingUp className="w-4 h-4 text-success" />
+                  <span className="text-muted-foreground">Avg Efficiency</span>
+                </div>
+                <span className="text-lg font-bold text-success">{community.avgEfficiency}%</span>
+              </div>
             </div>
-          </div>
-
-          {/* Leaderboard */}
-          <div className="bg-card border border-border rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-border bg-muted/30">
-              <h3 className="font-bold flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-primary" />
-                Live Leaderboard
-              </h3>
-            </div>
-            <Leaderboard />
-          </div>
+          ))}
         </div>
-      ) : (
-        <div className="px-4 py-6 space-y-6">
-          {/* Join Community */}
-          <div className="bg-card border border-border rounded-2xl p-6">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Code className="w-5 h-5 text-primary" />
-              Join with Code
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Enter an invite code to join an existing community
-            </p>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Enter invite code"
-                value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value)}
-                className="flex-1"
-              />
-              <Button>Join</Button>
-            </div>
-          </div>
-
-          {/* Create Community */}
-          <div className="bg-card border border-border rounded-2xl p-6">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Plus className="w-5 h-5 text-primary" />
-              Create New Community
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Start your own competition and invite friends
-            </p>
-            <div className="space-y-3">
-              <Input placeholder="Community name" />
-              <select className="w-full px-3 py-2 bg-background border border-border rounded-md">
-                <option>Solos (1v1v1)</option>
-                <option>Duos (2v2v2)</option>
-                <option>Trios (3v3v3)</option>
-                <option>Squads (4v4v4)</option>
-              </select>
-              <Button className="w-full">Create Community</Button>
-            </div>
-          </div>
-
-          {/* How It Works */}
-          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6">
-            <h4 className="font-bold mb-3">How Challenges Work</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-0.5">•</span>
-                <span>Every Sunday, teams are randomly formed</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-0.5">•</span>
-                <span>Track automatically via Apple Shortcuts</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-0.5">•</span>
-                <span>Winners get glory, losers get roasted</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-0.5">•</span>
-                <span>Efficiency matters more than raw time</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

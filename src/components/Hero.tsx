@@ -58,6 +58,14 @@ const Hero = () => {
               <Button 
                 size="lg" 
                 variant="outline"
+                onClick={() => navigate("/demo")}
+                className="text-lg border-accent/30 hover:bg-accent/10"
+              >
+                View Demo
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
                 className="text-lg border-primary/30 hover:bg-primary/10"
                 onClick={scrollToHowItWorks}
               >
