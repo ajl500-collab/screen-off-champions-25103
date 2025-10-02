@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
 import IndividualInsights from "@/components/IndividualInsights";
 import GoalSettingModal from "@/components/GoalSettingModal";
+import { SavedGoals } from "@/components/SavedGoals";
 
 const mockProfile = {
   name: "Alex Chen",
@@ -108,13 +109,10 @@ const Profile = () => {
               </h3>
               <Button onClick={() => setIsGoalModalOpen(true)} size="sm">
                 <Plus className="w-4 h-4 mr-2" />
-                Set Goal
+                Set New Goal
               </Button>
             </div>
-            <p className="text-muted-foreground text-sm">
-              Set personal goals and get AI-powered structured plans to achieve them.
-              {!isPremium && " (AI features available for premium users)"}
-            </p>
+            <SavedGoals />
           </div>
         </div>
 
