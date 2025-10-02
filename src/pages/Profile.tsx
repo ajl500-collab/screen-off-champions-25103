@@ -39,7 +39,7 @@ const Profile = () => {
   const [isPremium] = useState(false); // Set to true for premium users
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-20 pt-20">
       <Header />
       {/* Header */}
       <div className="bg-card border-b border-border px-4 py-6">
