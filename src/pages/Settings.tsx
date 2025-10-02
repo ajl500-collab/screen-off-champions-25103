@@ -109,7 +109,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24 pt-20">
+    <div className="min-h-screen bg-background pb-24 pt-24">
       <Header />
       
       {/* Header */}

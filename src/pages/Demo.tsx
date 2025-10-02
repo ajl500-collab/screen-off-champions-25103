@@ -43,7 +43,7 @@ const Demo = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-20 pt-24">
       <Header />
       
       {/* Demo Content */}
