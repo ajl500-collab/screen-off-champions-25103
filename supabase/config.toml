@@ -5,6 +5,3 @@ verify_jwt = true
 
 [functions.generate-goal-plan]
 verify_jwt = true
-
-[functions.categorize-app]
-verify_jwt = false
