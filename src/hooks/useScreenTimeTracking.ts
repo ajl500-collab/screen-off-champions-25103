@@ -165,6 +165,27 @@ export const trackAppUsage = async (
 ) => {
   const today = new Date().toISOString().split('T')[0];
 
+  // Check if the app exists in app_categories
+  const { data: categoryData } = await supabase
+    .from('app_categories')
+    .select('*')
+    .eq('app_name', appName)
+    .single();
+
+  // If app doesn't exist in categories, use AI to categorize it
+  if (!categoryData) {
+    console.log('App not found in categories, using AI to categorize:', appName);
+    try {
+      await supabase.functions.invoke('categorize-app', {
+        body: { appName }
+      });
+      console.log('Successfully categorized app:', appName);
+    } catch (error) {
+      console.error('Error categorizing app:', error);
+      // Continue anyway - the app will be treated as uncategorized
+    }
+  }
+
   // Check if entry exists for today
   const { data: existing } = await supabase
     .from('user_screen_time')
