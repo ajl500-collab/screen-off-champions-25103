@@ -37,20 +37,21 @@ export const useScreenTimeTracking = (userId: string | null, period: 'today' | '
           ? today.toISOString().split('T')[0]
           : new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-        // Fetch screen time data
+        // Fetch screen time data with app categories
         const { data: screenTimeData, error } = await supabase
           .from('user_screen_time')
-          .select('*')
+          .select(`
+            *,
+            app_categories (
+              category,
+              efficiency_multiplier
+            )
+          `)
           .eq('user_id', userId)
           .gte('date', startDate)
           .order('date', { ascending: false });
 
         if (error) throw error;
-
-        // Fetch all app categories
-        const { data: categories } = await supabase
-          .from('app_categories')
-          .select('*');
 
         if (!screenTimeData || screenTimeData.length === 0) {
           // No data yet, return empty state
@@ -74,13 +75,11 @@ export const useScreenTimeTracking = (userId: string | null, period: 'today' | '
         let weightedScore = 0;
 
         const appMap = new Map<string, AppUsage>();
-        const categoryMap = new Map(categories?.map(c => [c.app_name, c]) || []);
 
         screenTimeData.forEach((entry: any) => {
           const minutes = entry.time_spent_minutes;
-          const appCategory = categoryMap.get(entry.app_name);
-          const category = appCategory?.category || 'utility';
-          const multiplier = appCategory?.efficiency_multiplier || 0;
+          const category = entry.app_categories?.category || 'utility';
+          const multiplier = entry.app_categories?.efficiency_multiplier || 0;
 
           totalMinutes += minutes;
           weightedScore += minutes * multiplier;
@@ -166,28 +165,6 @@ export const trackAppUsage = async (
 ) => {
   const today = new Date().toISOString().split('T')[0];
 
-  // First, check if the app is categorized
-  const { data: categoryData } = await supabase
-    .from('app_categories')
-    .select('*')
-    .eq('app_name', appName)
-    .maybeSingle();
-
-  // If not categorized, categorize it using AI
-  if (!categoryData) {
-    try {
-      const { data: categorizeResult, error: categorizeError } = await supabase.functions.invoke('categorize-app', {
-        body: { appName }
-      });
-
-      if (categorizeError) {
-        console.error('Error categorizing app:', categorizeError);
-      }
-    } catch (error) {
-      console.error('Error calling categorize-app function:', error);
-    }
-  }
-
   // Check if entry exists for today
   const { data: existing } = await supabase
     .from('user_screen_time')
@@ -195,7 +172,7 @@ export const trackAppUsage = async (
     .eq('user_id', userId)
     .eq('app_name', appName)
     .eq('date', today)
-    .maybeSingle();
+    .single();
 
   if (existing) {
     // Update existing entry

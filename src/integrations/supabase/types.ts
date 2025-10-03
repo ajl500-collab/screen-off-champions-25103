@@ -277,6 +277,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_user_screen_time_app_categories"
+            columns: ["app_name"]
+            isOneToOne: false
+            referencedRelation: "app_categories"
+            referencedColumns: ["app_name"]
+          },
+          {
             foreignKeyName: "user_screen_time_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
