@@ -44,10 +44,10 @@ const Index = () => {
             </div>
             
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-primary transition-colors">Privacy</a>
-              <a href="#" className="hover:text-primary transition-colors">Terms</a>
-              <a href="#" className="hover:text-primary transition-colors">Support</a>
-              <a href="#" className="hover:text-primary transition-colors">Blog</a>
+              <button onClick={() => navigate("/privacy")} className="hover:text-primary transition-colors">Privacy</button>
+              <button onClick={() => navigate("/terms")} className="hover:text-primary transition-colors">Terms</button>
+              <button onClick={() => navigate("/support")} className="hover:text-primary transition-colors">Support</button>
+              <button onClick={() => navigate("/blog")} className="hover:text-primary transition-colors">Blog</button>
             </div>
           </div>
           

@@ -11,12 +11,6 @@ const EfficiencyInsights = () => {
     <section className="py-24 relative bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <div className="inline-block mb-4">
-            <span className="px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-semibold">
-              <Brain className="inline w-4 h-4 mr-2" />
-              How Rankings Work
-            </span>
-          </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             The <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Efficiency Algorithm</span>
           </h2>

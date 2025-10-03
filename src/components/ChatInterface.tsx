@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import EmojiPicker from "./EmojiPicker";
 import GifPicker from "./GifPicker";
+import ImageZoomDialog from "./ImageZoomDialog";
 
 interface Message {
   id: string;
@@ -35,6 +36,7 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
   const [currentTeamId, setCurrentTeamId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"community" | "team">("community");
   const [isLoading, setIsLoading] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const { toast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -358,7 +360,8 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
                         <img
                           src={message.media_url}
                           alt="Shared media"
-                          className="rounded-lg max-w-full"
+                          className="rounded-lg max-w-xs max-h-64 cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => setZoomedImage(message.media_url!)}
                         />
                       ) : (
                         <p className="text-sm leading-relaxed">{message.content}</p>
@@ -413,7 +416,8 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
                           <img
                             src={message.media_url}
                             alt="Shared media"
-                            className="rounded-lg max-w-full"
+                            className="rounded-lg max-w-xs max-h-64 cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => setZoomedImage(message.media_url!)}
                           />
                         ) : (
                           <p className="text-sm leading-relaxed">{message.content}</p>
@@ -481,6 +485,13 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
           </div>
         </div>
       </div>
+      
+      {/* Image Zoom Dialog */}
+      <ImageZoomDialog 
+        imageUrl={zoomedImage || ''} 
+        isOpen={!!zoomedImage} 
+        onClose={() => setZoomedImage(null)} 
+      />
     </div>
   );
 };

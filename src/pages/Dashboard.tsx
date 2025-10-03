@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useScreenTimeTracking } from "@/hooks/useScreenTimeTracking";
 import { ManualTimeEntry } from "@/components/ManualTimeEntry";
+import EfficiencyInfo from "@/components/EfficiencyInfo";
 
 const mockDashboardData = {
   today: {
@@ -161,7 +162,8 @@ const Dashboard = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Zap className="w-5 h-5 text-primary" />
-              <h3 className="font-semibold">Efficiency Overview</h3>
+              <h3 className="font-semibold text-lg">Efficiency Overview</h3>
+              <EfficiencyInfo score={data.efficiencyPercentage} />
             </div>
             <div className={`flex items-center gap-1 text-sm ${data.change < 0 ? 'text-success' : 'text-destructive'}`}>
               {data.change < 0 ? <TrendingDown className="w-4 h-4" /> : <TrendingUp className="w-4 h-4" />}
@@ -171,49 +173,45 @@ const Dashboard = () => {
           
           <div className="flex items-center gap-6">
             {/* Circular Progress */}
-            <div className="relative w-32 h-32">
-              <svg className="w-32 h-32 transform -rotate-90">
+            <div className="relative w-40 h-40">
+              <svg className="w-40 h-40 transform -rotate-90">
                 <circle
-                  cx="64"
-                  cy="64"
-                  r="56"
+                  cx="80"
+                  cy="80"
+                  r="70"
                   stroke="currentColor"
-                  strokeWidth="8"
+                  strokeWidth="10"
                   fill="none"
                   className="text-muted/20"
                 />
                 <circle
-                  cx="64"
-                  cy="64"
-                  r="56"
+                  cx="80"
+                  cy="80"
+                  r="70"
                   stroke="currentColor"
-                  strokeWidth="8"
+                  strokeWidth="10"
                   fill="none"
-                  strokeDasharray={`${2 * Math.PI * 56}`}
-                  strokeDashoffset={`${2 * Math.PI * 56 * (1 - data.efficiencyPercentage / 100)}`}
+                  strokeDasharray={`${2 * Math.PI * 70}`}
+                  strokeDashoffset={`${2 * Math.PI * 70 * (1 - data.efficiencyPercentage / 100)}`}
                   className="text-primary transition-all duration-1000"
                   strokeLinecap="round"
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-3xl font-bold text-primary">{data.efficiencyPercentage}%</div>
-                <div className="text-xs text-muted-foreground">Efficiency</div>
+                <div className="text-4xl font-bold text-primary">{data.efficiencyPercentage}%</div>
+                <div className="text-sm text-muted-foreground">Efficiency</div>
               </div>
             </div>
             
             {/* Stats */}
-            <div className="flex-1 space-y-2">
-              <div>
-                <div className="text-sm text-muted-foreground">Productivity Rate</div>
-                <div className="text-2xl font-bold text-success">{data.productivityPercentage}%</div>
-              </div>
+            <div className="flex-1 space-y-3">
               <div>
                 <div className="text-sm text-muted-foreground">Total Screen Time</div>
-                <div className="text-2xl font-bold font-mono">{data.totalTime}</div>
+                <div className="text-3xl font-bold font-mono">{data.totalTime}</div>
               </div>
               <div>
                 <div className="text-sm text-muted-foreground">Efficient Hours</div>
-                <div className="text-2xl font-bold font-mono text-primary">{data.efficientTime}</div>
+                <div className="text-3xl font-bold font-mono text-primary">{data.efficientTime}</div>
               </div>
             </div>
           </div>
@@ -222,16 +220,16 @@ const Dashboard = () => {
         {/* Time Breakdown */}
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-success/5 border border-success/20 rounded-xl p-4">
-            <div className="text-xs text-success mb-1">Productive</div>
-            <div className="text-xl font-bold font-mono">{data.efficientTime}</div>
+            <div className="text-sm font-bold text-success mb-1">Productive</div>
+            <div className="text-2xl font-bold font-mono">{data.efficientTime}</div>
           </div>
           <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-4">
-            <div className="text-xs text-destructive mb-1">Wasted</div>
-            <div className="text-xl font-bold font-mono">{data.inefficientTime}</div>
+            <div className="text-sm font-bold text-destructive mb-1">Wasted</div>
+            <div className="text-2xl font-bold font-mono">{data.inefficientTime}</div>
           </div>
           <div className="bg-muted/20 border border-border rounded-xl p-4">
-            <div className="text-xs text-muted-foreground mb-1">Utility</div>
-            <div className="text-xl font-bold font-mono">{data.utilityTime}</div>
+            <div className="text-sm font-bold text-muted-foreground mb-1">Utility</div>
+            <div className="text-2xl font-bold font-mono">{data.utilityTime}</div>
           </div>
         </div>
 

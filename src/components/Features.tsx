@@ -29,7 +29,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section className="py-24 relative" id="how-it-works">
+    <section className="py-24 relative bg-background" id="how-it-works">
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-10 right-10 w-64 h-64 bg-success rounded-full blur-[100px] animate-float" />
         <div className="absolute bottom-10 left-10 w-64 h-64 bg-destructive rounded-full blur-[100px] animate-float" style={{ animationDelay: '1s' }} />

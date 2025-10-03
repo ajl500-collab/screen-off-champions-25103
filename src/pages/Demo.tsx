@@ -26,6 +26,7 @@ const Demo = () => {
       price: "$19.99",
       period: "per year",
       features: [
+        "Everything in Free, plus:",
         "Unlimited Apps tracking",
         "Intentional App-Switching (3s cooldown)",
         "Breathing Exercise with custom duration & location",
@@ -160,8 +161,8 @@ const Demo = () => {
               
               <div className="bg-success/10 border border-success/20 rounded-xl p-6">
                 <div className="text-sm text-muted-foreground mb-2">Efficiency Score</div>
-                <div className="text-4xl font-bold text-success">+45</div>
-                <div className="text-xs text-muted-foreground mt-1">68% efficient usage</div>
+                <div className="text-4xl font-bold text-success">68%</div>
+                <div className="text-xs text-muted-foreground mt-1">Productive usage</div>
               </div>
               
               <div className="bg-accent/10 border border-accent/20 rounded-xl p-6">
