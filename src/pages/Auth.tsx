@@ -115,10 +115,21 @@ const Auth = () => {
   };
 
   const handleAppleAuth = async () => {
-    toast({
-      title: "Coming Soon",
-      description: "Apple Sign In will be available soon",
-    });
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to sign in with Apple",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
