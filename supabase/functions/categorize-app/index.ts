@@ -40,12 +40,36 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an app categorization expert. Categorize apps into exactly one of these categories:
-- productive: Apps that help with work, learning, productivity (e.g., LinkedIn, Notion, Gmail, Slack, GitHub, VS Code, Google Docs)
-- unproductive: Apps that are primarily for entertainment or distraction (e.g., Instagram, TikTok, YouTube, Netflix, Twitter/X, Facebook, Reddit, Snapchat)
-- utility: Apps that are neutral tools (e.g., Messages, Phone, Clock, Settings, Maps, Weather, Calculator)
+            content: `You are an expert app categorization system. Categorize apps into exactly one category:
 
-Respond with ONLY a JSON object in this exact format: {"category": "productive|unproductive|utility", "reasoning": "brief explanation"}`
+PRODUCTIVE - Apps that create value, build skills, manage finances, or support professional/personal growth:
+- Work & Productivity: LinkedIn, Slack, Notion, Gmail, Microsoft Office, Google Workspace, Asana, Trello
+- Finance & Investment: Coinbase, Robinhood, PayPal, Venmo, banking apps, budgeting apps, investment platforms
+- Learning & Education: Duolingo, Khan Academy, Coursera, Udemy, language learning, skill development
+- News & Information: Bloomberg, Wall Street Journal, New York Times, Reuters, quality journalism apps
+- Health & Fitness (goal-oriented): Fitness tracking, meal planning, meditation apps, health monitoring
+- Creative Tools: Adobe apps, design software, music production, video editing for work
+
+UNPRODUCTIVE - Apps primarily for entertainment, passive consumption, or time-wasting:
+- Social Media: Instagram, TikTok, Facebook, Twitter/X, Reddit, Snapchat (when used recreationally)
+- Entertainment: Netflix, YouTube (casual viewing), gaming apps, streaming services
+- Games: Mobile games, casual gaming, time-killer games
+- Viral Content: Meme apps, short-form video platforms
+
+UTILITY - Neutral tools for daily tasks, no inherent productivity value:
+- Communication: Messages, Phone, FaceTime (personal use)
+- System Tools: Settings, Clock, Calculator, Calendar, Files
+- Navigation: Maps, GPS, Weather
+- Basic Services: Camera, Photos (unless for work)
+
+IMPORTANT RULES:
+1. Finance/investment/banking apps are ALWAYS productive
+2. News and journalism apps are productive unless purely entertainment news
+3. E-commerce apps can be productive if for business, otherwise utility
+4. Consider the app's PRIMARY purpose and typical use case
+5. When in doubt between productive and utility, choose productive if it involves money, learning, or career
+
+Respond with ONLY a JSON object: {"category": "productive|unproductive|utility", "confidence": "high|medium|low", "reasoning": "brief explanation"}`
           },
           {
             role: 'user',
@@ -76,8 +100,72 @@ Respond with ONLY a JSON object in this exact format: {"category": "productive|u
       throw new Error('Invalid AI response format');
     }
 
-    const categorization = JSON.parse(jsonMatch[0]);
-    const category = categorization.category;
+    let categorization = JSON.parse(jsonMatch[0]);
+    let category = categorization.category;
+
+    // If confidence is low or medium, try web search for better context
+    if (categorization.confidence === 'low' || categorization.confidence === 'medium') {
+      console.log(`Low/medium confidence for ${appName}, searching web for context...`);
+      
+      try {
+        // Search for app information
+        const searchQuery = `${appName} app what is it used for purpose`;
+        const searchResponse = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(searchQuery)}`, {
+          headers: {
+            'Accept': 'application/json',
+            'X-Subscription-Token': 'BSAjL4BGOucMvVkm9lB8PcXJqvZ3ySQ'
+          }
+        });
+
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
+          const searchContext = searchData.web?.results?.slice(0, 3)
+            .map((r: any) => `${r.title}: ${r.description}`)
+            .join('\n') || 'No results found';
+
+          console.log('Search context:', searchContext);
+
+          // Re-categorize with search context
+          const recategorizeResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash',
+              messages: [
+                {
+                  role: 'system',
+                  content: `You are an expert app categorization system. Based on the search results about the app, categorize it into productive, unproductive, or utility. Use the same rules as before.
+
+Respond with ONLY a JSON object: {"category": "productive|unproductive|utility", "reasoning": "brief explanation"}`
+                },
+                {
+                  role: 'user',
+                  content: `Categorize "${appName}" based on this information:\n\n${searchContext}`
+                }
+              ],
+            }),
+          });
+
+          if (recategorizeResponse.ok) {
+            const recategorizeData = await recategorizeResponse.json();
+            const recategorizeContent = recategorizeData.choices[0]?.message?.content;
+            const recategorizeMatch = recategorizeContent.match(/\{[^}]+\}/);
+            
+            if (recategorizeMatch) {
+              categorization = JSON.parse(recategorizeMatch[0]);
+              category = categorization.category;
+              console.log(`Re-categorized ${appName} as ${category} with search context`);
+            }
+          }
+        }
+      } catch (searchError) {
+        console.error('Search/recategorization error:', searchError);
+        // Continue with original categorization
+      }
+    }
 
     // Map category to efficiency multiplier
     let efficiency_multiplier = 0;
