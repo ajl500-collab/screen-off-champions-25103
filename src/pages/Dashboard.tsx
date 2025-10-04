@@ -78,7 +78,9 @@ const Dashboard = () => {
     utilityTime: `${Math.floor(realData.utilityMinutes / 60)}h ${realData.utilityMinutes % 60}m`,
     utilityTimeMinutes: realData.utilityMinutes,
     efficiencyScore: realData.efficiencyScore,
-    efficiencyPercentage: Math.max(0, Math.min(100, 50 + realData.efficiencyScore)),
+    // For display: score is already -100 to 100
+    // For circular progress: convert to 0-100 range for visualization
+    efficiencyPercentage: Math.max(0, Math.min(100, ((realData.efficiencyScore + 100) / 2))),
     productivityPercentage: Math.round((realData.efficientMinutes / Math.max(realData.totalMinutes, 1)) * 100),
     rank: 3,
     change: -12,
@@ -161,7 +163,7 @@ const Dashboard = () => {
             <div className="flex items-center gap-2">
               <Zap className="w-5 h-5 text-primary" />
               <h3 className="font-semibold text-lg">Efficiency Overview</h3>
-              <EfficiencyInfo score={data.efficiencyPercentage} />
+              <EfficiencyInfo score={Math.round(realData?.efficiencyScore || data.efficiencyScore || 0)} />
             </div>
             <div className={`flex items-center gap-1 text-sm ${data.change < 0 ? 'text-success' : 'text-destructive'}`}>
               {data.change < 0 ? <TrendingDown className="w-4 h-4" /> : <TrendingUp className="w-4 h-4" />}
@@ -196,8 +198,11 @@ const Dashboard = () => {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-4xl font-bold text-primary">{data.efficiencyPercentage}%</div>
+                <div className="text-4xl font-bold text-primary">{Math.round(realData?.efficiencyScore || data.efficiencyScore || 0)}%</div>
                 <div className="text-sm text-muted-foreground">Efficiency</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {Math.round((realData?.efficientMinutes || data.efficientTimeMinutes || 0) / Math.max((realData?.totalMinutes || data.totalTimeMinutes || 1), 1) * 100)}% prod - {Math.round((realData?.inefficientMinutes || data.inefficientTimeMinutes || 0) / Math.max((realData?.totalMinutes || data.totalTimeMinutes || 1), 1) * 100)}% unprod
+                </div>
               </div>
             </div>
             
