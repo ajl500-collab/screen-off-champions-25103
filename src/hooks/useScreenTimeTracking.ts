@@ -117,10 +117,9 @@ export const useScreenTimeTracking = (userId: string | null, period: 'today' | '
 
         // Calculate efficiency score using new percentage-based algorithm
         // Score = (Productive% - Unproductive%)
-        // Clamp at 0 minimum - negative efficiency not shown
         const productivePercentage = totalMinutes > 0 ? (efficientMinutes / totalMinutes) * 100 : 0;
         const unproductivePercentage = totalMinutes > 0 ? (inefficientMinutes / totalMinutes) * 100 : 0;
-        const efficiencyScore = Math.max(0, productivePercentage - unproductivePercentage);
+        const efficiencyScore = productivePercentage - unproductivePercentage;
 
         setData({
           totalMinutes,

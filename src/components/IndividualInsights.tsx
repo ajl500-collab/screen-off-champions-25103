@@ -38,7 +38,7 @@ const IndividualInsights = ({ screenTimeData }: { screenTimeData?: any }) => {
   const dailyAverageHours = Math.floor(dailyAverage / 60);
   const dailyAverageMinutes = dailyAverage % 60;
 
-  const efficiencyScore = Math.max(0, todayData?.efficiencyScore || 0);
+  const efficiencyScore = todayData?.efficiencyScore || 0;
   const totalTimeToday = todayData?.totalMinutes || 0;
   const productiveTimeToday = todayData?.efficientMinutes || 0;
 
