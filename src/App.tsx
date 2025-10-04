@@ -6,9 +6,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Demo from "./pages/Demo";
-import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
 import Communities from "./pages/Communities";
-import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -36,10 +35,12 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/demo" element={<Demo />} />
-          <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
+          <Route path="/home" element={<AppLayout><Home /></AppLayout>} />
           <Route path="/communities" element={<AppLayout><Communities /></AppLayout>} />
-          <Route path="/profile" element={<AppLayout><Profile /></AppLayout>} />
           <Route path="/settings" element={<AppLayout><Settings /></AppLayout>} />
+          {/* Redirect old routes to home */}
+          <Route path="/dashboard" element={<Navigate to="/home" replace />} />
+          <Route path="/profile" element={<Navigate to="/home" replace />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/support" element={<Support />} />

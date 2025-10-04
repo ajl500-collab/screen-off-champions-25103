@@ -14,6 +14,9 @@ interface EfficiencyInfoProps {
 }
 
 const EfficiencyInfo = ({ score }: EfficiencyInfoProps) => {
+  // Clamp score at 0 minimum
+  const clampedScore = Math.max(0, score);
+  
   const getScoreDescription = (score: number) => {
     if (score >= 60) return {
       level: "Excellent",
@@ -30,19 +33,14 @@ const EfficiencyInfo = ({ score }: EfficiencyInfoProps) => {
       description: "Room for improvement. Your productive and unproductive time are relatively balanced.",
       color: "text-accent"
     };
-    if (score >= 0) return {
+    return {
       level: "Needs Work",
       description: "Your unproductive screen time is close to or exceeds productive time. Consider setting goals to improve.",
       color: "text-destructive"
     };
-    return {
-      level: "Critical",
-      description: "Your screen time is heavily weighted toward unproductive apps. Set clear goals and track your progress.",
-      color: "text-destructive"
-    };
   };
 
-  const scoreInfo = getScoreDescription(score);
+  const scoreInfo = getScoreDescription(clampedScore);
 
   return (
     <Dialog>
@@ -55,13 +53,13 @@ const EfficiencyInfo = ({ score }: EfficiencyInfoProps) => {
         <DialogHeader>
           <DialogTitle>Your Efficiency Score Explained</DialogTitle>
           <DialogDescription>
-            Understanding what your {score}% means
+            Understanding what your {clampedScore}% means
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
           <div className="flex items-center gap-3">
-            <div className="text-4xl font-bold">{score}%</div>
+            <div className="text-4xl font-bold">{clampedScore}%</div>
             <div>
               <div className={`text-lg font-bold ${scoreInfo.color}`}>{scoreInfo.level}</div>
               <div className="text-sm text-muted-foreground">Efficiency Level</div>
@@ -82,7 +80,8 @@ const EfficiencyInfo = ({ score }: EfficiencyInfoProps) => {
               <li>Calculate percentage of unproductive time from total screen time</li>
               <li>Subtract unproductive% from productive% to get your score</li>
               <li>Utility apps (Messages, Maps, etc.) don't affect your score</li>
-              <li>Score ranges from -100% (all unproductive) to 100% (all productive)</li>
+              <li>Score ranges from 0% (inefficient) to 100% (all productive)</li>
+              <li>Negative scores are displayed as 0%</li>
             </ul>
           </div>
 

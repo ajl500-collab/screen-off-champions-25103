@@ -86,6 +86,65 @@ export type Database = {
           },
         ]
       }
+      communities: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          id: string
+          invite_code: string
+          name: string
+          team_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          id?: string
+          invite_code: string
+          name: string
+          team_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          invite_code?: string
+          name?: string
+          team_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      community_members: {
+        Row: {
+          community_id: string
+          id: string
+          joined_at: string | null
+          user_id: string
+        }
+        Insert: {
+          community_id: string
+          id?: string
+          joined_at?: string | null
+          user_id: string
+        }
+        Update: {
+          community_id?: string
+          id?: string
+          joined_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_members_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       competition_settings: {
         Row: {
           created_at: string | null
@@ -317,6 +376,10 @@ export type Database = {
       calculate_efficiency_score: {
         Args: { p_date: string; p_user_id: string }
         Returns: number
+      }
+      generate_invite_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
     }
     Enums: {

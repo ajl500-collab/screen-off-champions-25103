@@ -21,7 +21,7 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center">
           <Button 
             size="lg" 
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/home")}
             className="text-lg px-8"
           >
             Open App <ArrowRight className="ml-2 w-5 h-5" />
