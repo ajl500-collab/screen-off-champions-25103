@@ -326,8 +326,8 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="community" className="flex-1 flex flex-col mt-0">
-          <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+        <TabsContent value="community" className="flex-1 flex flex-col mt-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-4" ref={scrollRef}>
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
@@ -374,11 +374,11 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
                 </div>
               ))}
             </div>
-          </ScrollArea>
+          </div>
         </TabsContent>
 
-        <TabsContent value="team" className="flex-1 flex flex-col mt-0">
-          <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+        <TabsContent value="team" className="flex-1 flex flex-col mt-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-4" ref={scrollRef}>
             {!currentTeamId ? (
               <div className="flex items-center justify-center h-full text-muted-foreground">
                 Join a team to access team chat
@@ -431,7 +431,7 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
                 ))}
               </div>
             )}
-          </ScrollArea>
+          </div>
         </TabsContent>
       </Tabs>
 

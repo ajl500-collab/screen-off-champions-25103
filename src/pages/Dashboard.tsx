@@ -137,13 +137,7 @@ const Dashboard = () => {
               <p className="text-xs text-muted-foreground mt-1">Demo data - Add your time to see real stats</p>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <ManualTimeEntry />
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
-              <Trophy className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">#{data.rank}</span>
-            </div>
-          </div>
+          <ManualTimeEntry />
         </div>
 
         {/* Period Toggle */}
