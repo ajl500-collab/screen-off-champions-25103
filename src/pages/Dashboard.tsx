@@ -310,8 +310,11 @@ const Dashboard = () => {
         {/* Algorithm Explainer */}
         <div className="bg-card border border-border rounded-2xl p-4">
           <h4 className="font-semibold mb-2 text-sm">How It Works</h4>
+          <p className="text-xs text-muted-foreground leading-relaxed mb-2">
+            Your efficiency score = (Productive% - Unproductive%)
+          </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Your efficiency score is calculated by weighting your app usage. Productive apps (LinkedIn, WSJ, Notion) add +150% to your score. Unproductive apps (TikTok, Instagram) subtract -150%. Utility apps (Messages, Clock) are neutral.
+            We calculate what percentage of your total screen time is productive vs unproductive, then subtract to get your score. Score ranges from -100% to 100%.
           </p>
         </div>
       </div>

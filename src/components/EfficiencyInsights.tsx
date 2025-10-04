@@ -1,9 +1,9 @@
 import { TrendingUp, TrendingDown, Brain, Zap } from "lucide-react";
 
 const appBreakdown = [
-  { category: "Productive", apps: ["LinkedIn", "WSJ", "Notion"], time: "2h 15m", multiplier: "+1.5x", color: "success" },
-  { category: "Unproductive", apps: ["Instagram", "TikTok", "YouTube"], time: "1h 45m", multiplier: "-1.5x", color: "destructive" },
-  { category: "Utility", apps: ["Messages", "Clock", "Maps"], time: "0h 35m", multiplier: "0x", color: "muted" },
+  { category: "Productive", apps: ["LinkedIn", "WSJ", "Notion"], time: "2h 15m", percentage: "56%", color: "success" },
+  { category: "Unproductive", apps: ["Instagram", "TikTok", "YouTube"], time: "1h 45m", percentage: "44%", color: "destructive" },
+  { category: "Utility", apps: ["Messages", "Clock", "Maps"], time: "0h 35m", percentage: "15%", color: "muted" },
 ];
 
 const EfficiencyInsights = () => {
@@ -60,8 +60,12 @@ const EfficiencyInsights = () => {
               </div>
               
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                <p className="text-sm font-semibold mb-2">Formula:</p>
+                <p className="text-sm font-mono mb-2">
+                  Efficiency Score = (Productive Time / Total Time × 100) - (Unproductive Time / Total Time × 100)
+                </p>
                 <p className="text-sm">
-                  Your efficiency is calculated using a weighted algorithm. Productive apps boost your score significantly, unproductive apps drag it down, and utility apps remain neutral.
+                  Your score represents the difference between productive and unproductive time as percentages. A higher score means more productive usage!
                 </p>
               </div>
             </div>
@@ -96,7 +100,7 @@ const EfficiencyInsights = () => {
                           item.color === 'destructive' ? 'bg-destructive text-primary-foreground' :
                           'bg-muted text-foreground'
                         }`}>
-                          {item.multiplier}
+                          {item.percentage}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground">
@@ -116,7 +120,8 @@ const EfficiencyInsights = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm text-muted-foreground">Final Efficiency Score</div>
-                  <div className="text-3xl font-bold text-success">+45</div>
+                  <div className="text-3xl font-bold text-success">+12%</div>
+                  <div className="text-xs text-muted-foreground mt-1">(56% productive - 44% unproductive)</div>
                 </div>
                 <div className="text-right">
                   <div className="text-sm text-muted-foreground">Leaderboard Rank</div>

@@ -15,24 +15,29 @@ interface EfficiencyInfoProps {
 
 const EfficiencyInfo = ({ score }: EfficiencyInfoProps) => {
   const getScoreDescription = (score: number) => {
-    if (score >= 80) return {
+    if (score >= 60) return {
       level: "Excellent",
-      description: "You're using your phone incredibly efficiently! Your productive app usage far outweighs time-wasting activities.",
+      description: "Outstanding! Your productive time significantly exceeds unproductive time. You're using your phone efficiently.",
       color: "text-success"
     };
-    if (score >= 60) return {
+    if (score >= 40) return {
       level: "Good",
-      description: "Solid productivity! You're maintaining a healthy balance between productive and leisure screen time.",
+      description: "Solid productivity! You're maintaining a healthy balance with more productive than unproductive screen time.",
       color: "text-primary"
     };
-    if (score >= 40) return {
+    if (score >= 20) return {
       level: "Fair",
-      description: "Room for improvement. Try reducing time on unproductive apps and focus more on productive activities.",
+      description: "Room for improvement. Your productive and unproductive time are relatively balanced.",
       color: "text-accent"
     };
-    return {
+    if (score >= 0) return {
       level: "Needs Work",
-      description: "Your screen time is heavily weighted toward unproductive apps. Consider setting goals to improve your efficiency.",
+      description: "Your unproductive screen time is close to or exceeds productive time. Consider setting goals to improve.",
+      color: "text-destructive"
+    };
+    return {
+      level: "Critical",
+      description: "Your screen time is heavily weighted toward unproductive apps. Set clear goals and track your progress.",
       color: "text-destructive"
     };
   };
@@ -67,11 +72,17 @@ const EfficiencyInfo = ({ score }: EfficiencyInfoProps) => {
 
           <div className="bg-card border border-border rounded-lg p-4 space-y-2">
             <h4 className="font-semibold">How It's Calculated:</h4>
+            <div className="bg-primary/5 border border-primary/20 rounded p-3 mb-2">
+              <p className="text-sm font-mono">
+                Efficiency = (Productive% - Unproductive%)
+              </p>
+            </div>
             <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-              <li>Productive apps (LinkedIn, Notion, etc.) boost your score</li>
-              <li>Unproductive apps (TikTok, Instagram, etc.) lower your score</li>
-              <li>Utility apps (Messages, Maps, etc.) are neutral</li>
-              <li>The algorithm weighs productive time vs. unproductive time</li>
+              <li>Calculate percentage of productive time from total screen time</li>
+              <li>Calculate percentage of unproductive time from total screen time</li>
+              <li>Subtract unproductive% from productive% to get your score</li>
+              <li>Utility apps (Messages, Maps, etc.) don't affect your score</li>
+              <li>Score ranges from -100% (all unproductive) to 100% (all productive)</li>
             </ul>
           </div>
 
