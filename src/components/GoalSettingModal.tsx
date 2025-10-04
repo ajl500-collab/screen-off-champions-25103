@@ -36,18 +36,36 @@ const GoalSettingModal = ({ isOpen, onClose, onGoalCreated, isPremium = false }:
         body: { goal: goalText },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Edge function error:", error);
+        throw new Error(error.message || "Failed to generate plan");
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      if (!data?.plan) {
+        throw new Error("No plan received from AI");
+      }
 
       setAiPlan(data.plan);
       toast({
-        title: "Plan Generated",
+        title: "✨ Plan Generated",
         description: "Your AI-powered plan is ready!",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating plan:", error);
+      
+      const errorMessage = error.message?.includes("Authentication failed") 
+        ? "AI service is temporarily unavailable. Please try again later."
+        : error.message?.includes("Rate limit")
+        ? "Too many requests. Please wait a moment and try again."
+        : error.message || "Failed to generate AI plan. Please try again.";
+      
       toast({
-        title: "Error",
-        description: "Failed to generate AI plan. Please try again.",
+        title: "Generation Failed",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
