@@ -165,11 +165,24 @@ export const useScreenTimeTracking = (userId: string | null, period: 'today' | '
   return { data, loading };
 };
 
+// Normalize app name to prevent duplicates
+const normalizeAppName = (name: string): string => {
+  return name.trim()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 export const trackAppUsage = async (
   userId: string,
   appName: string,
   minutes: number
 ) => {
+  // Normalize the app name
+  const normalizedAppName = normalizeAppName(appName);
+  console.log(`Tracking app usage: ${normalizedAppName} (original: ${appName})`);
+  appName = normalizedAppName;
+  
   const today = new Date().toISOString().split('T')[0];
 
   // Check if app is categorized

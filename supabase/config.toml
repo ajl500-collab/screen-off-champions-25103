@@ -8,3 +8,6 @@ verify_jwt = true
 
 [functions.categorize-app]
 verify_jwt = false
+
+[functions.recategorize-existing-apps]
+verify_jwt = false

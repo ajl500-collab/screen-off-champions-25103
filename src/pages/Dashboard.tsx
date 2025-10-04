@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useScreenTimeTracking } from "@/hooks/useScreenTimeTracking";
 import { ManualTimeEntry } from "@/components/ManualTimeEntry";
 import EfficiencyInfo from "@/components/EfficiencyInfo";
+import { RecategorizeButton } from "@/components/RecategorizeButton";
 
 const mockDashboardData = {
   today: {
@@ -137,7 +138,10 @@ const Dashboard = () => {
               <p className="text-xs text-muted-foreground mt-1">Demo data - Add your time to see real stats</p>
             )}
           </div>
-          <ManualTimeEntry />
+          <div className="flex gap-2">
+            <RecategorizeButton />
+            <ManualTimeEntry />
+          </div>
         </div>
 
         {/* Period Toggle */}

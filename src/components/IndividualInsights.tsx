@@ -1,116 +1,136 @@
+import { useEffect, useState } from "react";
+import { Activity, TrendingUp, Zap, Target, Award, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { TrendingDown, TrendingUp, Clock, Zap, Target, Award } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useScreenTimeTracking } from "@/hooks/useScreenTimeTracking";
 
 interface InsightData {
   title: string;
   value: string;
   change: number;
-  trend: "up" | "down";
-  icon: React.ReactNode;
+  trend: "up" | "down" | "neutral";
+  icon: any;
   description: string;
   progress?: number;
 }
 
-const IndividualInsights = ({ screenTimeData }: { screenTimeData: any }) => {
+const IndividualInsights = ({ screenTimeData }: { screenTimeData?: any }) => {
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Get current user
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id || null);
+      setLoading(false);
+    };
+    getUser();
+  }, []);
+
+  // Fetch real screen time data for "today" and "week"
+  const { data: todayData } = useScreenTimeTracking(userId, 'today');
+  const { data: weekData } = useScreenTimeTracking(userId, 'week');
+
+  // Calculate real metrics
+  const dailyAverage = weekData ? Math.round(weekData.totalMinutes / 7) : 0;
+  const dailyAverageHours = Math.floor(dailyAverage / 60);
+  const dailyAverageMinutes = dailyAverage % 60;
+
+  const efficiencyScore = todayData?.efficiencyScore || 0;
+  const totalTimeToday = todayData?.totalMinutes || 0;
+  const productiveTimeToday = todayData?.efficientMinutes || 0;
+
+  // Calculate streak (simplified - would need historical data for real streak)
+  const currentStreak = totalTimeToday > 0 ? 1 : 0;
+
+  // Real insights based on actual data
   const insights: InsightData[] = [
     {
       title: "Daily Average",
-      value: "3h 24m",
-      change: -12,
-      trend: "down",
-      icon: <Clock className="w-5 h-5" />,
-      description: "12% less than last week",
-      progress: 68,
+      value: dailyAverage > 0 ? `${dailyAverageHours}h ${dailyAverageMinutes}m` : "0m",
+      change: 0,
+      trend: "neutral",
+      icon: Calendar,
+      description: "Last 7 days"
     },
     {
       title: "Efficiency Score",
-      value: "78%",
-      change: 5,
-      trend: "up",
-      icon: <Zap className="w-5 h-5" />,
-      description: "5% improvement",
-      progress: 78,
+      value: Math.round(efficiencyScore).toString(),
+      change: 0,
+      trend: efficiencyScore > 50 ? "up" : "down",
+      icon: Zap,
+      description: "Today's performance",
+      progress: Math.max(0, Math.min(100, efficiencyScore))
     },
     {
-      title: "Productive Hours",
-      value: "2h 15m",
-      change: 18,
-      trend: "up",
-      icon: <Target className="w-5 h-5" />,
-      description: "18% more productive time",
-      progress: 45,
+      title: "Active Days",
+      value: currentStreak.toString(),
+      change: 0,
+      trend: "neutral",
+      icon: Activity,
+      description: "Current streak"
     },
     {
-      title: "Weekly Rank",
-      value: "#3",
-      change: 2,
-      trend: "up",
-      icon: <Award className="w-5 h-5" />,
-      description: "Moved up 2 positions",
+      title: "Best Week",
+      value: weekData ? `${Math.floor(weekData.totalMinutes / 60)}h ${weekData.totalMinutes % 60}m` : "0m",
+      change: 0,
+      trend: "neutral",
+      icon: Award,
+      description: "This week's total"
     },
     {
-      title: "Longest Streak",
-      value: "5 days",
-      change: 1,
-      trend: "up",
-      icon: <TrendingUp className="w-5 h-5" />,
-      description: "Current active streak",
+      title: "Productive Time",
+      value: productiveTimeToday > 0 ? `${Math.floor(productiveTimeToday / 60)}h ${productiveTimeToday % 60}m` : "0m",
+      change: 0,
+      trend: productiveTimeToday > 0 ? "up" : "neutral",
+      icon: Target,
+      description: "Today's focus time"
     },
     {
-      title: "Phone Pickups",
-      value: "45/day",
-      change: -8,
-      trend: "down",
-      icon: <TrendingDown className="w-5 h-5" />,
-      description: "8% reduction",
-      progress: 55,
-    },
+      title: "Productivity Rate",
+      value: totalTimeToday > 0 ? `${Math.round((productiveTimeToday / totalTimeToday) * 100)}%` : "0%",
+      change: 0,
+      trend: (productiveTimeToday / Math.max(totalTimeToday, 1)) > 0.5 ? "up" : "down",
+      icon: TrendingUp,
+      description: "Productive vs total",
+      progress: totalTimeToday > 0 ? Math.round((productiveTimeToday / totalTimeToday) * 100) : 0
+    }
   ];
 
+  if (loading) {
+    return (
+      <div className="grid grid-cols-2 gap-3">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <Card key={i} className="p-4 animate-pulse">
+            <div className="h-4 bg-muted rounded mb-2" />
+            <div className="h-6 bg-muted rounded mb-1" />
+            <div className="h-3 bg-muted rounded" />
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {insights.map((insight, index) => (
-        <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                {insight.icon}
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">
-                  {insight.title}
-                </h3>
-                <p className="text-2xl font-bold mt-1">{insight.value}</p>
-              </div>
+    <div className="grid grid-cols-2 gap-3">
+      {insights.map((insight, idx) => {
+        const Icon = insight.icon;
+        return (
+          <Card key={idx} className="p-4 border border-border bg-card">
+            <div className="flex items-center gap-2 mb-2">
+              <Icon className="w-4 h-4 text-primary" />
+              <h3 className="text-xs font-medium text-muted-foreground">{insight.title}</h3>
             </div>
-            <div
-              className={`flex items-center gap-1 text-sm font-medium ${
-                insight.trend === "up"
-                  ? insight.title.includes("Rank") || insight.title.includes("Streak")
-                    ? "text-success"
-                    : insight.title.includes("Pickups")
-                    ? "text-destructive"
-                    : "text-success"
-                  : "text-success"
-              }`}
-            >
-              {insight.trend === "up" ? (
-                <TrendingUp className="w-4 h-4" />
-              ) : (
-                <TrendingDown className="w-4 h-4" />
-              )}
-              {Math.abs(insight.change)}%
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground mb-3">
-            {insight.description}
-          </p>
-          {insight.progress !== undefined && (
-            <Progress value={insight.progress} className="h-2" />
-          )}
-        </Card>
-      ))}
+            <div className="text-xl font-bold mb-1">{insight.value}</div>
+            <p className="text-xs text-muted-foreground mb-2">{insight.description}</p>
+            {insight.progress !== undefined && (
+              <Progress value={insight.progress} className="h-1.5" />
+            )}
+          </Card>
+        );
+      })}
     </div>
   );
 };
