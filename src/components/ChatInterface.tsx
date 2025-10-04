@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Send, Image as ImageIcon, Mic } from "lucide-react";
+import { X, Send, Image as ImageIcon, Smile, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import EmojiPicker from "./EmojiPicker";
 import GifPicker from "./GifPicker";
 import ImageZoomDialog from "./ImageZoomDialog";
@@ -38,7 +36,7 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const { toast } = useToast();
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -149,9 +147,7 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
   };
 
   const scrollToBottom = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const sendMessage = async () => {
@@ -198,17 +194,11 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
     setIsLoading(true);
 
     try {
-      // Upload to a temporary storage location (you'd set up a proper bucket)
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${currentUserId}/${fileName}`;
-
       toast({
         title: "Uploading...",
         description: "Your image is being uploaded",
       });
 
-      // For now, use a data URL as placeholder
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64String = reader.result as string;
@@ -241,6 +231,7 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
             description: "Image sent successfully",
           });
         }
+        setIsLoading(false);
       };
       reader.readAsDataURL(file);
     } catch (error) {
@@ -250,7 +241,6 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
         description: "Failed to upload image",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -295,194 +285,163 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
     }
   };
 
-  const handleVoiceMessage = () => {
-    toast({
-      title: "Coming Soon",
-      description: "Voice messages will be available soon!",
-    });
-  };
-
   return (
     <div className="fixed inset-0 bg-background z-[60] flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b flex items-center justify-between bg-gradient-to-r from-primary/5 to-accent/5">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-          <h2 className="text-xl font-bold">Chat</h2>
+      <div className="flex-none p-4 border-b border-border bg-card">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+            <h2 className="text-lg font-bold">Chat</h2>
+          </div>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="w-5 h-5" />
+          </Button>
         </div>
-        <Button variant="ghost" onClick={onClose}>
-          Close
-        </Button>
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "community" | "team")} className="flex-1 flex flex-col">
-        <TabsList className="w-full rounded-none border-b">
-          <TabsTrigger value="community" className="flex-1">
-            Community Chat
-          </TabsTrigger>
-          <TabsTrigger value="team" className="flex-1">
-            Team Chat
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="community" className="flex-1 flex flex-col mt-0 overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-4" ref={scrollRef}>
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex gap-3 ${
-                    message.user_id === currentUserId ? "flex-row-reverse" : ""
-                  }`}
-                >
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback>
-                      {message.profiles?.avatar_emoji || "😊"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div
-                    className={`flex flex-col ${
-                      message.user_id === currentUserId ? "items-end" : ""
-                    }`}
-                  >
-                    <span className="text-xs text-muted-foreground mb-1">
-                      {message.profiles?.display_name || "User"}
-                    </span>
-                    <div
-                      className={`rounded-2xl px-4 py-3 max-w-[70vw] shadow-sm ${
-                        message.user_id === currentUserId
-                          ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground"
-                          : "bg-card border border-border"
-                      }`}
-                    >
-                      {message.media_url ? (
-                        <img
-                          src={message.media_url}
-                          alt="Shared media"
-                          className="rounded-lg max-w-xs max-h-64 cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={() => setZoomedImage(message.media_url!)}
-                        />
-                      ) : (
-                        <p className="text-sm leading-relaxed">{message.content}</p>
-                      )}
-                    </div>
-                    <span className="text-xs text-muted-foreground mt-1">
-                      {new Date(message.created_at).toLocaleTimeString()}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="team" className="flex-1 flex flex-col mt-0 overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-4" ref={scrollRef}>
-            {!currentTeamId ? (
-              <div className="flex items-center justify-center h-full text-muted-foreground">
-                Join a team to access team chat
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex gap-3 ${
-                      message.user_id === currentUserId ? "flex-row-reverse" : ""
-                    }`}
-                  >
-                    <Avatar className="w-8 h-8">
-                      <AvatarFallback>
-                        {message.profiles?.avatar_emoji || "😊"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div
-                      className={`flex flex-col ${
-                        message.user_id === currentUserId ? "items-end" : ""
-                      }`}
-                    >
-                      <span className="text-xs text-muted-foreground mb-1">
-                        {message.profiles?.display_name || "User"}
-                      </span>
-                      <div
-                        className={`rounded-2xl px-4 py-3 max-w-[70vw] shadow-sm ${
-                          message.user_id === currentUserId
-                            ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground"
-                            : "bg-card border border-border"
-                        }`}
-                      >
-                        {message.media_url ? (
-                          <img
-                            src={message.media_url}
-                            alt="Shared media"
-                            className="rounded-lg max-w-xs max-h-64 cursor-pointer hover:opacity-90 transition-opacity"
-                            onClick={() => setZoomedImage(message.media_url!)}
-                          />
-                        ) : (
-                          <p className="text-sm leading-relaxed">{message.content}</p>
-                        )}
-                      </div>
-                      <span className="text-xs text-muted-foreground mt-1">
-                        {new Date(message.created_at).toLocaleTimeString()}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+      <div className="flex-none border-b border-border bg-card">
+        <div className="flex">
+          <button
+            onClick={() => setActiveTab("community")}
+            className={`flex-1 py-3 text-sm font-medium transition-colors relative ${
+              activeTab === "community"
+                ? "text-primary"
+                : "text-muted-foreground"
+            }`}
+          >
+            Community
+            {activeTab === "community" && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
             )}
-          </div>
-        </TabsContent>
-      </Tabs>
+          </button>
+          <button
+            onClick={() => setActiveTab("team")}
+            className={`flex-1 py-3 text-sm font-medium transition-colors relative ${
+              activeTab === "team"
+                ? "text-primary"
+                : "text-muted-foreground"
+            }`}
+          >
+            Team Chat
+            {activeTab === "team" && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+            )}
+          </button>
+        </div>
+      </div>
 
-      {/* Input Area */}
-      <div className="p-4 border-t bg-card/50 backdrop-blur-sm">
-        <div className="bg-muted/50 rounded-2xl p-2 border border-border/50">
-          <div className="flex gap-2 items-center">
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              accept="image/*,video/*"
-              onChange={handleFileUpload}
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => fileInputRef.current?.click()}
-              className="hover:bg-primary/10 hover:text-primary transition-colors"
-              title="Upload Image"
-            >
-              <ImageIcon className="w-5 h-5" />
-            </Button>
-            <GifPicker onGifSelect={handleGifSelect} />
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={handleVoiceMessage}
-              className="hover:bg-primary/10 hover:text-primary transition-colors"
-              title="Voice Message"
-            >
-              <Mic className="w-5 h-5" />
-            </Button>
-            <EmojiPicker onEmojiSelect={handleEmojiSelect} />
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 bg-background">
+        {activeTab === "team" && !currentTeamId ? (
+          <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+            Join a team to access team chat
+          </div>
+        ) : (
+          <div className="space-y-4 pb-4">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex gap-2 ${
+                  message.user_id === currentUserId ? "flex-row-reverse" : ""
+                }`}
+              >
+                <Avatar className="w-8 h-8 flex-none">
+                  <AvatarFallback className="text-sm">
+                    {message.profiles?.avatar_emoji || "😊"}
+                  </AvatarFallback>
+                </Avatar>
+                <div
+                  className={`flex flex-col ${
+                    message.user_id === currentUserId ? "items-end" : "items-start"
+                  } max-w-[75%]`}
+                >
+                  <span className="text-xs text-muted-foreground mb-1 px-1">
+                    {message.profiles?.display_name || "User"}
+                  </span>
+                  <div
+                    className={`rounded-3xl px-4 py-2.5 ${
+                      message.user_id === currentUserId
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card border border-border"
+                    }`}
+                  >
+                    {message.media_url ? (
+                      <img
+                        src={message.media_url}
+                        alt="Shared media"
+                        className="rounded-2xl max-w-[250px] max-h-[300px] cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => setZoomedImage(message.media_url!)}
+                      />
+                    ) : (
+                      <p className="text-sm break-words">{message.content}</p>
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground mt-1 px-1">
+                    {new Date(message.created_at).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
+      </div>
+
+      {/* Input Area - Fixed at bottom */}
+      <div className="flex-none p-3 border-t border-border bg-card">
+        <div className="flex items-center gap-2">
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleFileUpload}
+          />
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isLoading || (activeTab === "team" && !currentTeamId)}
+            className="flex-none hover:bg-accent"
+          >
+            <ImageIcon className="w-5 h-5" />
+          </Button>
+
+          <GifPicker onGifSelect={handleGifSelect} />
+
+          <div className="flex-1 relative">
             <Input
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type a message..."
-              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+              placeholder="Message..."
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
               disabled={isLoading || (activeTab === "team" && !currentTeamId)}
-              className="flex-1 border-0 bg-background/50 focus-visible:ring-1 focus-visible:ring-primary"
+              className="pr-10 rounded-full border-border bg-muted"
             />
-            <Button
-              onClick={sendMessage}
-              disabled={isLoading || !newMessage.trim() || (activeTab === "team" && !currentTeamId)}
-              size="icon"
-              className="bg-primary hover:bg-primary/90 transition-all hover:scale-105"
-            >
-              <Send className="w-5 h-5" />
-            </Button>
+            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+              <EmojiPicker onEmojiSelect={handleEmojiSelect} />
+            </div>
           </div>
+
+          <Button
+            onClick={sendMessage}
+            disabled={isLoading || !newMessage.trim() || (activeTab === "team" && !currentTeamId)}
+            size="icon"
+            className="flex-none rounded-full bg-primary hover:bg-primary/90"
+          >
+            <Send className="w-4 h-4" />
+          </Button>
         </div>
       </div>
       
