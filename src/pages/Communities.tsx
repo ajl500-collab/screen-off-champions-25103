@@ -168,6 +168,17 @@ const Communities = () => {
               </div>
             </div>
 
+            {/* Leaderboard */}
+            <div className="bg-card border border-border rounded-2xl overflow-hidden mb-6">
+              <div className="p-4 border-b border-border bg-muted/30">
+                <h3 className="font-bold flex items-center gap-2">
+                  <Trophy className="w-5 h-5 text-primary" />
+                  Live Leaderboard
+                </h3>
+              </div>
+              <Leaderboard />
+            </div>
+
             {/* Online Members Card */}
             <div className="bg-card border border-border rounded-2xl p-6 mb-6">
               <div className="flex items-center justify-between mb-4">
@@ -241,7 +252,7 @@ const Communities = () => {
             </div>
 
             {/* Community Info Card */}
-            <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/20 rounded-2xl p-6 mb-6">
+            <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/20 rounded-2xl p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h2 className="text-2xl font-bold mb-1">{currentCommunity.name}</h2>
@@ -268,17 +279,6 @@ const Communities = () => {
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Leaderboard */}
-            <div className="bg-card border border-border rounded-2xl overflow-hidden">
-              <div className="p-4 border-b border-border bg-muted/30">
-                <h3 className="font-bold flex items-center gap-2">
-                  <Trophy className="w-5 h-5 text-primary" />
-                  Live Leaderboard
-                </h3>
-              </div>
-              <Leaderboard />
             </div>
           </div>
         ) : (
