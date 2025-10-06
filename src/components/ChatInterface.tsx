@@ -17,6 +17,8 @@ interface Message {
   chat_type: string;
   created_at: string;
   media_url?: string;
+  community_id?: string | null;
+  team_id?: string | null;
   profiles?: {
     display_name: string;
     avatar_emoji: string;
@@ -25,9 +27,10 @@ interface Message {
 
 interface ChatInterfaceProps {
   onClose: () => void;
+  communityId?: string | null;
 }
 
-const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
+const ChatInterface = ({ onClose, communityId = null }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -164,6 +167,8 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
 
     if (activeTab === "team" && currentTeamId) {
       messageData.team_id = currentTeamId;
+    } else if (activeTab === "community" && communityId) {
+      messageData.community_id = communityId;
     }
 
     try {
@@ -213,6 +218,8 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
 
         if (activeTab === "team" && currentTeamId) {
           messageData.team_id = currentTeamId;
+        } else if (activeTab === "community" && communityId) {
+          messageData.community_id = communityId;
         }
 
         const { error } = await (supabase as any)
@@ -264,6 +271,8 @@ const ChatInterface = ({ onClose }: ChatInterfaceProps) => {
 
     if (activeTab === "team" && currentTeamId) {
       messageData.team_id = currentTeamId;
+    } else if (activeTab === "community" && communityId) {
+      messageData.community_id = communityId;
     }
 
     try {

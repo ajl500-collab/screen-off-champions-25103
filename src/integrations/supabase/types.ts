@@ -41,6 +41,7 @@ export type Database = {
       chat_messages: {
         Row: {
           chat_type: string
+          community_id: string | null
           content: string
           created_at: string | null
           id: string
@@ -51,6 +52,7 @@ export type Database = {
         }
         Insert: {
           chat_type: string
+          community_id?: string | null
           content: string
           created_at?: string | null
           id?: string
@@ -61,6 +63,7 @@ export type Database = {
         }
         Update: {
           chat_type?: string
+          community_id?: string | null
           content?: string
           created_at?: string | null
           id?: string
@@ -70,6 +73,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "chat_messages_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "chat_messages_team_id_fkey"
             columns: ["team_id"]
@@ -82,6 +92,65 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      communities: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          id: string
+          invite_code: string
+          name: string
+          team_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          id?: string
+          invite_code: string
+          name: string
+          team_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          invite_code?: string
+          name?: string
+          team_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      community_members: {
+        Row: {
+          community_id: string
+          id: string
+          joined_at: string | null
+          user_id: string
+        }
+        Insert: {
+          community_id: string
+          id?: string
+          joined_at?: string | null
+          user_id: string
+        }
+        Update: {
+          community_id?: string
+          id?: string
+          joined_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_members_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
             referencedColumns: ["id"]
           },
         ]
@@ -317,6 +386,10 @@ export type Database = {
       calculate_efficiency_score: {
         Args: { p_date: string; p_user_id: string }
         Returns: number
+      }
+      generate_invite_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
     }
     Enums: {
