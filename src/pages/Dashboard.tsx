@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { TrendingDown, TrendingUp, Zap, Trophy } from "lucide-react";
+import { TrendingDown, TrendingUp, Zap, Trophy, History } from "lucide-react";
 import Header from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,8 @@ import { useScreenTimeTracking } from "@/hooks/useScreenTimeTracking";
 import { ManualTimeEntry } from "@/components/ManualTimeEntry";
 import EfficiencyInfo from "@/components/EfficiencyInfo";
 import { RecategorizeButton } from "@/components/RecategorizeButton";
+import { DailyHistoryModal } from "@/components/DailyHistoryModal";
+import { Button } from "@/components/ui/button";
 
 const mockDashboardData = {
   today: {
@@ -61,6 +63,7 @@ const Dashboard = () => {
   const [period, setPeriod] = useState<"today" | "week">("today");
   const [viewMode, setViewMode] = useState<"impact" | "actual">("impact");
   const [user, setUser] = useState<any>(null);
+  const [showHistory, setShowHistory] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -77,11 +80,9 @@ const Dashboard = () => {
     inefficientTimeMinutes: realData.inefficientMinutes,
     utilityTime: `${Math.floor(realData.utilityMinutes / 60)}h ${realData.utilityMinutes % 60}m`,
     utilityTimeMinutes: realData.utilityMinutes,
-    efficiencyScore: realData.efficiencyScore,
-    // For display: score is already -100 to 100
-    // For circular progress: convert to 0-100 range for visualization
-    efficiencyPercentage: Math.max(0, Math.min(100, ((realData.efficiencyScore + 100) / 2))),
-    productivityPercentage: Math.round((realData.efficientMinutes / Math.max(realData.totalMinutes, 1)) * 100),
+    efficiencyScore: Math.max(0, realData.efficiencyScore),
+    // For circular progress: use efficiency score directly (0-100)
+    efficiencyPercentage: Math.max(0, Math.min(100, realData.efficiencyScore)),
     rank: 3,
     change: -12,
     apps: realData.apps.map(app => ({
@@ -141,6 +142,14 @@ const Dashboard = () => {
             )}
           </div>
           <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowHistory(true)}
+            >
+              <History className="w-4 h-4 mr-2" />
+              History
+            </Button>
             <RecategorizeButton />
             <ManualTimeEntry />
           </div>
@@ -198,7 +207,7 @@ const Dashboard = () => {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-4xl font-bold text-primary">{Math.round(realData?.efficiencyScore || data.efficiencyScore || 0)}%</div>
+                <div className="text-4xl font-bold text-primary">{Math.max(0, Math.round(realData?.efficiencyScore || data.efficiencyScore || 0))}%</div>
                 <div className="text-sm text-muted-foreground">Efficiency</div>
                 <div className="text-xs text-muted-foreground mt-1">
                   {Math.round((realData?.efficientMinutes || data.efficientTimeMinutes || 0) / Math.max((realData?.totalMinutes || data.totalTimeMinutes || 1), 1) * 100)}% prod - {Math.round((realData?.inefficientMinutes || data.inefficientTimeMinutes || 0) / Math.max((realData?.totalMinutes || data.totalTimeMinutes || 1), 1) * 100)}% unprod
@@ -319,10 +328,19 @@ const Dashboard = () => {
             Your efficiency score = (Productive% - Unproductive%)
           </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            We calculate what percentage of your total screen time is productive vs unproductive, then subtract to get your score. Score ranges from -100% to 100%.
+            We calculate what percentage of your total screen time is productive vs unproductive, then subtract to get your score. Score ranges from 0% to 100% (clamped at 0 minimum).
           </p>
         </div>
       </div>
+
+      {/* History Modal */}
+      {user && (
+        <DailyHistoryModal 
+          isOpen={showHistory}
+          onClose={() => setShowHistory(false)}
+          userId={user.id}
+        />
+      )}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { Trophy, TrendingDown, TrendingUp, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface LeaderboardEntry {
   rank: number;
@@ -22,10 +23,17 @@ const mockLeaderboard = [
   { rank: 6, name: "Morgan", team: "Squad Beta", screenTime: "6h 52m", change: 12, avatar: "🤡", efficiencyScore: -42, userId: "mock6" },
 ];
 
-const Leaderboard = () => {
+interface LeaderboardProps {
+  period?: 'today' | 'week';
+  sortBy?: 'efficiency' | 'screentime';
+}
+
+const Leaderboard = ({ period = 'today', sortBy = 'efficiency' }: LeaderboardProps = {}) => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(mockLeaderboard);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [localPeriod, setLocalPeriod] = useState<'today' | 'week'>(period);
+  const [localSortBy, setLocalSortBy] = useState<'efficiency' | 'screentime'>(sortBy);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -33,28 +41,86 @@ const Leaderboard = () => {
         const { data: { user } } = await supabase.auth.getUser();
         setCurrentUserId(user?.id || null);
 
-        // Fetch profiles with screen time data
+        const today = new Date().toISOString().split('T')[0];
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        const startDate = localPeriod === 'today' ? today : weekAgo.toISOString().split('T')[0];
+
+        // Fetch screen time data for the period
+        const { data: screenTimeData, error: stError } = await supabase
+          .from('user_screen_time')
+          .select('user_id, time_spent_minutes, app_name')
+          .gte('date', startDate);
+
+        if (stError) throw stError;
+
+        // Fetch app categories
+        const { data: categories } = await supabase
+          .from('app_categories')
+          .select('*');
+
+        const categoryMap = new Map(categories?.map(cat => [cat.app_name, cat]) || []);
+
+        // Aggregate by user
+        const userStats = new Map<string, { totalMinutes: number; efficientMinutes: number; inefficientMinutes: number }>();
+        
+        screenTimeData?.forEach(entry => {
+          if (!userStats.has(entry.user_id)) {
+            userStats.set(entry.user_id, { totalMinutes: 0, efficientMinutes: 0, inefficientMinutes: 0 });
+          }
+          const stats = userStats.get(entry.user_id)!;
+          const cat = categoryMap.get(entry.app_name);
+          const multiplier = cat?.efficiency_multiplier || 0;
+          
+          stats.totalMinutes += entry.time_spent_minutes;
+          if (multiplier > 0) stats.efficientMinutes += entry.time_spent_minutes;
+          else if (multiplier < 0) stats.inefficientMinutes += entry.time_spent_minutes;
+        });
+
+        // Fetch profiles
         const { data: profiles, error } = await supabase
           .from('profiles')
-          .select('id, display_name, team_name, avatar_emoji, efficiency_score, total_screen_time_minutes')
-          .order('efficiency_score', { ascending: false })
-          .limit(20);
+          .select('id, display_name, team_name, avatar_emoji')
+          .in('id', Array.from(userStats.keys()));
 
         if (error) throw error;
 
         if (profiles && profiles.length > 0) {
-          const realLeaderboard: LeaderboardEntry[] = profiles.map((profile, index) => ({
-            rank: index + 1,
-            name: profile.display_name || 'Anonymous',
-            team: profile.team_name || 'No Team',
-            screenTime: `${Math.floor(profile.total_screen_time_minutes / 60)}h ${profile.total_screen_time_minutes % 60}m`,
-            change: Math.floor(Math.random() * 100) - 50, // Mock change for now
-            avatar: profile.avatar_emoji || '😎',
-            efficiencyScore: profile.efficiency_score || 0,
-            userId: profile.id
-          }));
+          let leaderboardData: LeaderboardEntry[] = profiles.map(profile => {
+            const stats = userStats.get(profile.id) || { totalMinutes: 0, efficientMinutes: 0, inefficientMinutes: 0 };
+            const productivePercentage = stats.totalMinutes > 0 ? (stats.efficientMinutes / stats.totalMinutes) * 100 : 0;
+            const unproductivePercentage = stats.totalMinutes > 0 ? (stats.inefficientMinutes / stats.totalMinutes) * 100 : 0;
+            const efficiencyScore = Math.max(0, productivePercentage - unproductivePercentage);
 
-          setLeaderboard(realLeaderboard);
+            return {
+              rank: 0,
+              name: profile.display_name || 'Anonymous',
+              team: profile.team_name || 'No Team',
+              screenTime: `${Math.floor(stats.totalMinutes / 60)}h ${stats.totalMinutes % 60}m`,
+              change: Math.floor(Math.random() * 100) - 50,
+              avatar: profile.avatar_emoji || '😎',
+              efficiencyScore: Math.round(efficiencyScore),
+              userId: profile.id
+            };
+          });
+
+          // Sort based on criteria
+          if (localSortBy === 'efficiency') {
+            leaderboardData.sort((a, b) => b.efficiencyScore - a.efficiencyScore);
+          } else {
+            leaderboardData.sort((a, b) => {
+              const aMinutes = userStats.get(a.userId)?.totalMinutes || 0;
+              const bMinutes = userStats.get(b.userId)?.totalMinutes || 0;
+              return bMinutes - aMinutes;
+            });
+          }
+
+          // Assign ranks
+          leaderboardData.forEach((entry, index) => {
+            entry.rank = index + 1;
+          });
+
+          setLeaderboard(leaderboardData);
         }
       } catch (error) {
         console.error('Error fetching leaderboard:', error);
@@ -85,7 +151,7 @@ const Leaderboard = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [localPeriod, localSortBy]);
 
   if (loading) {
     return (
@@ -97,8 +163,22 @@ const Leaderboard = () => {
 
   return (
     <div>
+      <Tabs value={localPeriod} onValueChange={(v) => setLocalPeriod(v as 'today' | 'week')} className="mb-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="today">Today</TabsTrigger>
+          <TabsTrigger value="week">This Week</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      <Tabs value={localSortBy} onValueChange={(v) => setLocalSortBy(v as 'efficiency' | 'screentime')} className="mb-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="efficiency">By Efficiency</TabsTrigger>
+          <TabsTrigger value="screentime">By Screen Time</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       {/* Leaderboard table */}
-          <div className="bg-card border border-border rounded-2xl overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -151,11 +231,9 @@ const Leaderboard = () => {
                           <div className={`px-3 py-1 rounded-lg font-bold ${
                             player.efficiencyScore > 50 
                               ? 'bg-success/10 text-success' 
-                              : player.efficiencyScore > 0
-                              ? 'bg-primary/10 text-primary'
-                              : 'bg-destructive/10 text-destructive'
+                              : 'bg-primary/10 text-primary'
                           }`}>
-                            {player.efficiencyScore > 0 ? '+' : ''}{Math.round(player.efficiencyScore)}
+                            {Math.max(0, Math.round(player.efficiencyScore))}%
                           </div>
                         </div>
                       </td>

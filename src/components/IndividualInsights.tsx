@@ -38,7 +38,7 @@ const IndividualInsights = ({ screenTimeData }: { screenTimeData?: any }) => {
   const dailyAverageHours = Math.floor(dailyAverage / 60);
   const dailyAverageMinutes = dailyAverage % 60;
 
-  const efficiencyScore = todayData?.efficiencyScore || 0;
+  const efficiencyScore = Math.max(0, todayData?.efficiencyScore || 0);
   const totalTimeToday = todayData?.totalMinutes || 0;
   const productiveTimeToday = todayData?.efficientMinutes || 0;
 
@@ -56,8 +56,8 @@ const IndividualInsights = ({ screenTimeData }: { screenTimeData?: any }) => {
       description: "Last 7 days"
     },
     {
-      title: "Efficiency Score",
-      value: Math.round(efficiencyScore).toString(),
+      title: "Efficiency Rate",
+      value: `${Math.round(efficiencyScore)}%`,
       change: 0,
       trend: efficiencyScore > 50 ? "up" : "down",
       icon: Zap,
@@ -89,13 +89,13 @@ const IndividualInsights = ({ screenTimeData }: { screenTimeData?: any }) => {
       description: "Today's focus time"
     },
     {
-      title: "Productivity Rate",
-      value: totalTimeToday > 0 ? `${Math.round((productiveTimeToday / totalTimeToday) * 100)}%` : "0%",
+      title: "Weekly Total",
+      value: weekData ? `${Math.floor(weekData.totalMinutes / 60)}h ${weekData.totalMinutes % 60}m` : "0m",
       change: 0,
-      trend: (productiveTimeToday / Math.max(totalTimeToday, 1)) > 0.5 ? "up" : "down",
+      trend: "neutral",
       icon: TrendingUp,
-      description: "Productive vs total",
-      progress: totalTimeToday > 0 ? Math.round((productiveTimeToday / totalTimeToday) * 100) : 0
+      description: "This week's screen time",
+      progress: undefined
     }
   ];
 
