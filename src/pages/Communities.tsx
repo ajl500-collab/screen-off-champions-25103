@@ -10,32 +10,20 @@ import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-const mockCommunities = [
-  {
-    id: 1,
-    name: "Squad Alpha",
-    members: 12,
-    teamType: "Trios",
-    weekEnds: "3d 14h",
-    yourRank: 2,
-    yourTeam: "Team Phoenix"
-  },
-  {
-    id: 2,
-    name: "College Bros",
-    members: 24,
-    teamType: "Squads",
-    weekEnds: "3d 14h",
-    yourRank: 7,
-    yourTeam: "The Grinders"
-  }
-];
 
 interface OnlineUser {
   user_id: string;
   display_name: string;
   avatar_emoji: string;
   online_at: string;
+}
+
+interface Community {
+  id: string;
+  name: string;
+  team_type: string;
+  members: number;
+  weekEnds: string;
 }
 
 const Communities = () => {
@@ -45,17 +33,75 @@ const Communities = () => {
   const [showChat, setShowChat] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [communities, setCommunities] = useState<Community[]>([]);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const currentCommunity = mockCommunities[activeCommunity];
+  const currentCommunity = communities[activeCommunity];
 
   useEffect(() => {
+    fetchCommunities();
     initializePresence();
     return () => {
       // Cleanup presence when component unmounts
       supabase.channel('community-presence').unsubscribe();
     };
   }, []);
+
+  const fetchCommunities = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get communities the user is a member of
+      const { data: memberships, error: memberError } = await supabase
+        .from('community_members')
+        .select('community_id')
+        .eq('user_id', user.id);
+
+      if (memberError) throw memberError;
+
+      if (!memberships || memberships.length === 0) {
+        setCommunities([]);
+        setLoading(false);
+        return;
+      }
+
+      const communityIds = memberships.map(m => m.community_id);
+
+      // Fetch community details
+      const { data: communitiesData, error: commError } = await supabase
+        .from('communities')
+        .select('*')
+        .in('id', communityIds);
+
+      if (commError) throw commError;
+
+      // Count members for each community
+      const communitiesWithCounts = await Promise.all(
+        (communitiesData || []).map(async (comm) => {
+          const { count } = await supabase
+            .from('community_members')
+            .select('*', { count: 'exact', head: true })
+            .eq('community_id', comm.id);
+
+          return {
+            id: comm.id,
+            name: comm.name,
+            team_type: comm.team_type,
+            members: count || 0,
+            weekEnds: "3d 14h" // This could be calculated from created_at
+          };
+        })
+      );
+
+      setCommunities(communitiesWithCounts);
+    } catch (error) {
+      console.error('Error fetching communities:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const initializePresence = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -149,10 +195,19 @@ const Communities = () => {
 
         {activeTab === "my" ? (
           <div className="px-4 py-6">
-            {/* Community Carousel */}
-            <div className="mb-6">
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {mockCommunities.map((comm, idx) => (
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+            ) : communities.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <p className="mb-4">You're not part of any communities yet</p>
+                <Button onClick={() => setActiveTab("join")}>Join or Create a Community</Button>
+              </div>
+            ) : (
+              <>
+                {/* Community Carousel */}
+                <div className="mb-6">
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                    {communities.map((comm, idx) => (
                   <button
                     key={comm.id}
                     onClick={() => setActiveCommunity(idx)}
@@ -163,12 +218,12 @@ const Communities = () => {
                     }`}
                   >
                     {comm.name}
-                  </button>
-                ))}
-              </div>
-            </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Leaderboard */}
+                {/* Leaderboard */}
             <div className="bg-card border border-border rounded-2xl overflow-hidden mb-6">
               <div className="p-4 border-b border-border bg-muted/30">
                 <h3 className="font-bold flex items-center gap-2">
@@ -251,35 +306,25 @@ const Communities = () => {
               )}
             </div>
 
-            {/* Community Info Card */}
-            <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/20 rounded-2xl p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold mb-1">{currentCommunity.name}</h2>
-                  <p className="text-sm text-muted-foreground">
-                    {currentCommunity.members} members • {currentCommunity.teamType}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs text-muted-foreground">Week ends in</div>
-                  <div className="text-lg font-bold text-primary">{currentCommunity.weekEnds}</div>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between bg-card/50 rounded-lg p-3 border border-border/50">
-                <div>
-                  <div className="text-xs text-muted-foreground mb-1">Your Team</div>
-                  <div className="font-semibold">{currentCommunity.yourTeam}</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs text-muted-foreground mb-1">Your Rank</div>
-                  <div className="flex items-center gap-1">
-                    <Trophy className="w-4 h-4 text-primary" />
-                    <span className="font-bold text-primary">#{currentCommunity.yourRank}</span>
+                {/* Community Info Card */}
+                {currentCommunity && (
+                  <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/20 rounded-2xl p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h2 className="text-2xl font-bold mb-1">{currentCommunity.name}</h2>
+                        <p className="text-sm text-muted-foreground">
+                          {currentCommunity.members} members • {currentCommunity.team_type}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground">Week ends in</div>
+                        <div className="text-lg font-bold text-primary">{currentCommunity.weekEnds}</div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
+                )}
+              </>
+            )}
           </div>
         ) : (
           <div className="px-4 py-6 space-y-6">

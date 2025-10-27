@@ -12,52 +12,6 @@ import { RecategorizeButton } from "@/components/RecategorizeButton";
 import { DailyHistoryModal } from "@/components/DailyHistoryModal";
 import { Button } from "@/components/ui/button";
 
-const mockDashboardData = {
-  today: {
-    totalTime: "3h 42m",
-    totalTimeMinutes: 222,
-    efficientTime: "1h 15m",
-    efficientTimeMinutes: 75,
-    inefficientTime: "2h 10m",
-    inefficientTimeMinutes: 130,
-    utilityTime: "17m",
-    utilityTimeMinutes: 17,
-    efficiencyScore: 52,
-    efficiencyPercentage: 68,
-    productivityPercentage: 34,
-    rank: 3,
-    change: -12,
-    apps: [
-      { name: "LinkedIn", time: "45m", category: "productive", efficiency: "+68m", actualMinutes: 45 },
-      { name: "Instagram", time: "1h 20m", category: "unproductive", efficiency: "-2h", actualMinutes: 80 },
-      { name: "WSJ", time: "30m", category: "productive", efficiency: "+45m", actualMinutes: 30 },
-      { name: "TikTok", time: "50m", category: "unproductive", efficiency: "-1h 15m", actualMinutes: 50 },
-      { name: "Messages", time: "17m", category: "utility", efficiency: "0m", actualMinutes: 17 },
-    ]
-  },
-  week: {
-    totalTime: "28h 15m",
-    totalTimeMinutes: 1695,
-    efficientTime: "8h 45m",
-    efficientTimeMinutes: 525,
-    inefficientTime: "16h 30m",
-    inefficientTimeMinutes: 990,
-    utilityTime: "3h",
-    utilityTimeMinutes: 180,
-    efficiencyScore: 45,
-    efficiencyPercentage: 62,
-    productivityPercentage: 31,
-    rank: 5,
-    change: -8,
-    apps: [
-      { name: "LinkedIn", time: "5h 20m", category: "productive", efficiency: "+8h", actualMinutes: 320 },
-      { name: "Instagram", time: "8h 45m", category: "unproductive", efficiency: "-13h 8m", actualMinutes: 525 },
-      { name: "WSJ", time: "3h 25m", category: "productive", efficiency: "+5h 8m", actualMinutes: 205 },
-      { name: "TikTok", time: "7h 45m", category: "unproductive", efficiency: "-11h 38m", actualMinutes: 465 },
-      { name: "Messages", time: "3h", category: "utility", efficiency: "0m", actualMinutes: 180 },
-    ]
-  }
-};
 
 const Dashboard = () => {
   const [period, setPeriod] = useState<"today" | "week">("today");
@@ -69,7 +23,7 @@ const Dashboard = () => {
   
   const { data: realData, loading } = useScreenTimeTracking(user?.id, period);
   
-  // Use real data if available, fallback to mock
+  // Use real data only
   const hasRealData = realData && realData.totalMinutes > 0;
   const data = hasRealData ? {
     totalTime: `${Math.floor(realData.totalMinutes / 60)}h ${realData.totalMinutes % 60}m`,
@@ -83,8 +37,8 @@ const Dashboard = () => {
     efficiencyScore: Math.max(0, realData.efficiencyScore),
     // For circular progress: use efficiency score directly (0-100)
     efficiencyPercentage: Math.max(0, Math.min(100, realData.efficiencyScore)),
-    rank: 3,
-    change: -12,
+    rank: 0,
+    change: 0,
     apps: realData.apps.map(app => ({
       name: app.app_name,
       time: `${Math.floor(app.time_spent_minutes / 60)}h ${app.time_spent_minutes % 60}m`,
@@ -94,7 +48,21 @@ const Dashboard = () => {
         `${app.efficiency_multiplier > 0 ? '+' : ''}${Math.round(app.time_spent_minutes * app.efficiency_multiplier)}m` : '0m',
       actualMinutes: app.time_spent_minutes
     }))
-  } : mockDashboardData[period];
+  } : {
+    totalTime: "0h 0m",
+    totalTimeMinutes: 0,
+    efficientTime: "0h 0m",
+    efficientTimeMinutes: 0,
+    inefficientTime: "0h 0m",
+    inefficientTimeMinutes: 0,
+    utilityTime: "0h 0m",
+    utilityTimeMinutes: 0,
+    efficiencyScore: 0,
+    efficiencyPercentage: 0,
+    rank: 0,
+    change: 0,
+    apps: []
+  };
 
   useEffect(() => {
     // Check authentication
@@ -138,7 +106,7 @@ const Dashboard = () => {
           <div>
             <h1 className="text-2xl font-bold">Dashboard</h1>
             {!hasRealData && (
-              <p className="text-xs text-muted-foreground mt-1">Demo data - Add your time to see real stats</p>
+              <p className="text-xs text-muted-foreground mt-1">No data yet - Add your screen time to start tracking</p>
             )}
           </div>
           <div className="flex gap-2">
@@ -173,10 +141,6 @@ const Dashboard = () => {
               <Zap className="w-5 h-5 text-primary" />
               <h3 className="font-semibold text-lg">Efficiency Overview</h3>
               <EfficiencyInfo score={Math.round(realData?.efficiencyScore || data.efficiencyScore || 0)} />
-            </div>
-            <div className={`flex items-center gap-1 text-sm ${data.change < 0 ? 'text-success' : 'text-destructive'}`}>
-              {data.change < 0 ? <TrendingDown className="w-4 h-4" /> : <TrendingUp className="w-4 h-4" />}
-              <span>{Math.abs(data.change)}%</span>
             </div>
           </div>
           
@@ -252,15 +216,22 @@ const Dashboard = () => {
           </div>
           
           {/* Toggle between views */}
-          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "impact" | "actual")} className="mb-3">
-            <TabsList className="w-full grid grid-cols-2">
-              <TabsTrigger value="impact">Screen Time by Impact</TabsTrigger>
-              <TabsTrigger value="actual">Actual Screen Time</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          {data.apps.length > 0 && (
+            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "impact" | "actual")} className="mb-3">
+              <TabsList className="w-full grid grid-cols-2">
+                <TabsTrigger value="impact">Screen Time by Impact</TabsTrigger>
+                <TabsTrigger value="actual">Actual Screen Time</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
 
           <div className="space-y-2">
-            {viewMode === "impact" ? (
+            {data.apps.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <p className="mb-2">No app usage data yet</p>
+                <p className="text-sm">Add your screen time to start tracking</p>
+              </div>
+            ) : viewMode === "impact" ? (
               // Screen Time by Impact - sorted by efficiency impact
               data.apps
                 .sort((a, b) => {

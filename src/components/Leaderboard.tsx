@@ -14,14 +14,6 @@ interface LeaderboardEntry {
   userId: string;
 }
 
-const mockLeaderboard = [
-  { rank: 1, name: "Alex", team: "Squad Alpha", screenTime: "2h 14m", change: -47, avatar: "🏆", efficiencyScore: 87, userId: "mock1" },
-  { rank: 2, name: "Jordan", team: "Duo Dynamic", screenTime: "3h 08m", change: -35, avatar: "🥈", efficiencyScore: 64, userId: "mock2" },
-  { rank: 3, name: "Sam", team: "Squad Alpha", screenTime: "3h 42m", change: -28, avatar: "🥉", efficiencyScore: 52, userId: "mock3" },
-  { rank: 4, name: "Casey", team: "Solo Warrior", screenTime: "4h 17m", change: -19, avatar: "😎", efficiencyScore: 38, userId: "mock4" },
-  { rank: 5, name: "Taylor", team: "Duo Dynamic", screenTime: "5h 33m", change: -8, avatar: "😅", efficiencyScore: -15, userId: "mock5" },
-  { rank: 6, name: "Morgan", team: "Squad Beta", screenTime: "6h 52m", change: 12, avatar: "🤡", efficiencyScore: -42, userId: "mock6" },
-];
 
 interface LeaderboardProps {
   period?: 'today' | 'week';
@@ -29,7 +21,7 @@ interface LeaderboardProps {
 }
 
 const Leaderboard = ({ period = 'today', sortBy = 'efficiency' }: LeaderboardProps = {}) => {
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>(mockLeaderboard);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [localPeriod, setLocalPeriod] = useState<'today' | 'week'>(period);
@@ -121,10 +113,12 @@ const Leaderboard = ({ period = 'today', sortBy = 'efficiency' }: LeaderboardPro
           });
 
           setLeaderboard(leaderboardData);
+        } else {
+          setLeaderboard([]);
         }
       } catch (error) {
         console.error('Error fetching leaderboard:', error);
-        // Keep mock data on error
+        setLeaderboard([]);
       } finally {
         setLoading(false);
       }
@@ -180,19 +174,25 @@ const Leaderboard = ({ period = 'today', sortBy = 'efficiency' }: LeaderboardPro
       {/* Leaderboard table */}
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border bg-muted/30">
-                    <th className="text-left p-4 font-semibold">Rank</th>
-                    <th className="text-left p-4 font-semibold">Player</th>
-                    <th className="text-left p-4 font-semibold">Team</th>
-                    <th className="text-right p-4 font-semibold">Efficiency</th>
-                    <th className="text-right p-4 font-semibold">Screen Time</th>
-                    <th className="text-right p-4 font-semibold">Change</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leaderboard.map((player) => (
+              {leaderboard.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <p className="mb-2">No leaderboard data yet</p>
+                  <p className="text-sm">Add screen time data to appear on the leaderboard</p>
+                </div>
+              ) : (
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/30">
+                      <th className="text-left p-4 font-semibold">Rank</th>
+                      <th className="text-left p-4 font-semibold">Player</th>
+                      <th className="text-left p-4 font-semibold">Team</th>
+                      <th className="text-right p-4 font-semibold">Efficiency</th>
+                      <th className="text-right p-4 font-semibold">Screen Time</th>
+                      <th className="text-right p-4 font-semibold">Change</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leaderboard.map((player) => (
                     <tr 
                       key={player.userId}
                       className={`border-b border-border last:border-0 hover:bg-muted/20 transition-colors ${
@@ -255,9 +255,10 @@ const Leaderboard = ({ period = 'today', sortBy = 'efficiency' }: LeaderboardPro
                         </div>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
           
