@@ -1,5 +1,87 @@
 # Changelog - UX Refresh
 
+## Phase 7: Sync Status + Connected Services (2025-10-28)
+
+### New Files Created
+
+- **`src/features/settings/SyncStatus.tsx`**: Sync status card with visual indicators (✅/❌), last updated timestamp, connect/reconnect button with mock loading state (1.5s), and localStorage persistence.
+
+- **`src/features/settings/ConnectedServices.tsx`**: Services list component with Apple Shortcuts and Webhooks integrations, toggle switches, privacy info tooltips, and collapsible troubleshooting accordion.
+
+- **`src/pages/SyncSettings.tsx`**: Dedicated sync settings page at `/settings/sync` route with back navigation and both SyncStatus and ConnectedServices components.
+
+- **`README-SYNC.md`**: Complete documentation of sync module architecture, state management, user flows, and testing scenarios.
+
+### Modified Files
+
+- **`src/features/dashboard/mockData.ts`**: Added `SyncService` and `MockSyncData` interfaces with `mockSyncData` object containing connection status, last updated time, and services array.
+
+- **`src/features/dashboard/copy.ts`**: Added `SyncCopy` interface and `syncCopy` object with connected/disconnected states, reconnecting message, success/error toasts, and troubleshooting steps.
+
+- **`src/pages/Settings.tsx`**: Added "Sync Status" link button with icon and description that navigates to `/settings/sync`.
+
+- **`src/App.tsx`**: Added `/settings/sync` route with SyncSettings page component, imported SyncSettings.
+
+- **`CHANGELOG.md`**: Added Phase 7 documentation.
+
+### Features Implemented
+
+- **Sync Status Card**: Visual health check with green (connected) or red (disconnected) indicators, pulse animation when disconnected
+- **Connection Flow**: Mock connect/reconnect with 1.5s loader state, success toast, status update
+- **Last Updated Timestamp**: Shows "Last updated: Xm ago" when connected
+- **Connected Services List**: Two services (Apple Shortcuts enabled, Webhooks coming soon)
+- **Service Toggles**: Functional switch for Apple Shortcuts with toast feedback
+- **Privacy Tooltip**: "We'll never access private data; only total usage time"
+- **Troubleshooting Accordion**: Collapsible section with 3 help steps, smooth expand/collapse
+- **LocalStorage Persistence**: Sync status and service states survive page refresh
+- **Toast Notifications**: Success messages on connect/disconnect and toggle changes
+- **Settings Link**: Accessible from main settings page with icon and description
+
+### Copy Tone Examples
+
+| Context      | Example                                       |
+| ------------ | --------------------------------------------- |
+| Connected    | "All synced. You're running clean."           |
+| Disconnected | "No data yet — reconnect to flex your focus." |
+| Reconnecting | "Syncing with the mothership…"                |
+| Success      | "Connected successfully 🎯"                   |
+
+### Visual Design
+
+- **Status Card Colors**: Green border/bg (connected), Red border/bg with pulse (disconnected)
+- **Service Cards**: Primary border/bg when enabled, neutral when disabled
+- **Animations**: 300ms fade-in, pulse on disconnect, smooth accordion
+- **Icons**: Check (✅) for connected, X (❌) for disconnected, Loader during sync
+
+### State Management
+
+- **LocalStorage Keys**: 
+  - `screenVS-sync-status`: Stores connection state and last updated time
+  - `screenVS-connected-services`: Stores service toggle states
+- **Persistence**: All states load on mount and save on change
+- **Mock Delay**: 1.5s simulated connection time
+
+### User Journey
+
+1. User navigates to Settings
+2. Clicks "Sync Status" button
+3. Sees current connection status card
+4. Views available services with toggles
+5. Clicks "Reconnect" → loader → success toast
+6. Toggle service on/off → toast confirmation
+7. Expand troubleshooting section for help
+8. Back to main Settings
+
+### Accessibility
+
+- All buttons keyboard accessible
+- Tooltip provides privacy context
+- Color contrast WCAG AA compliant
+- Touch targets 44px minimum
+- Animations respect `prefers-reduced-motion`
+
+---
+
 ## Phase 6: Power-Tips Carousel - Daily Habits + Unlockables (2025-10-28)
 
 ### New Files Created

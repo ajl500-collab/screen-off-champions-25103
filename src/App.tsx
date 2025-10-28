@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Communities from "./pages/Communities";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import SyncSettings from "./pages/SyncSettings";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Support from "./pages/Support";
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/communities" element={<AppLayout><Communities /></AppLayout>} />
             <Route path="/profile" element={<AppLayout><Profile /></AppLayout>} />
             <Route path="/settings" element={<AppLayout><Settings /></AppLayout>} />
+            <Route path="/settings/sync" element={<AppLayout><SyncSettings /></AppLayout>} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/support" element={<Support />} />

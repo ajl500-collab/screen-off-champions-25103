@@ -237,3 +237,38 @@ export const mockPowerTipsData: MockPowerTipsData = {
     },
   ],
 };
+
+export interface SyncService {
+  name: string;
+  enabled: boolean;
+  description: string;
+  icon: string;
+  disabled?: boolean;
+}
+
+export interface MockSyncData {
+  connected: boolean;
+  lastUpdatedMinutesAgo: number;
+  services: SyncService[];
+}
+
+export const mockSyncData: MockSyncData = {
+  connected: true,
+  lastUpdatedMinutesAgo: 3,
+  services: [
+    {
+      name: "Apple Shortcuts",
+      enabled: true,
+      description: "Primary data source for daily screen-time tracking.",
+      icon: "🍎",
+      disabled: false,
+    },
+    {
+      name: "Webhooks",
+      enabled: false,
+      description: "Future integration for Android or external imports.",
+      icon: "🌐",
+      disabled: true,
+    },
+  ],
+};

@@ -156,6 +156,52 @@ export const getTopRankCopy = (): string => {
   ];
 };
 
+interface SyncCopy {
+  connected: {
+    title: string;
+    subtitle: string;
+    message: string;
+  };
+  disconnected: {
+    title: string;
+    subtitle: string;
+    message: string;
+  };
+  reconnecting: string;
+  success: string;
+  error: string;
+  lastUpdated: string;
+  troubleshoot: {
+    title: string;
+    steps: string[];
+  };
+}
+
+export const syncCopy: SyncCopy = {
+  connected: {
+    title: "Screen-Time Sync",
+    subtitle: "iPhone Screen Time connected",
+    message: "All synced. You're running clean.",
+  },
+  disconnected: {
+    title: "Screen-Time Sync",
+    subtitle: "Not connected",
+    message: "No data yet — reconnect to flex your focus.",
+  },
+  reconnecting: "Syncing with the mothership…",
+  success: "Connected successfully 🎯",
+  error: "Failed to connect. Try again.",
+  lastUpdated: "Last updated: {minutes}m ago",
+  troubleshoot: {
+    title: "Having trouble connecting?",
+    steps: [
+      "Make sure Shortcuts is installed on your iPhone.",
+      "Reconnect via Settings → Privacy & Screen Time.",
+      "If issues persist, contact support.",
+    ],
+  },
+};
+
 export const insightsCopy: InsightsCopy = {
   summaries: {
     productiveUp: [

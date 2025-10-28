@@ -289,6 +289,26 @@ const Settings = () => {
           </div>
         </div>
 
+        {/* Sync Status Link */}
+        <Button
+          onClick={() => navigate("/settings/sync")}
+          variant="outline"
+          className="w-full justify-start gap-2 h-auto p-6 bg-card border-border"
+        >
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-3">
+              <div className="text-2xl">🔄</div>
+              <div className="text-left">
+                <div className="font-semibold">Sync Status</div>
+                <div className="text-xs text-muted-foreground">
+                  Manage your data connections
+                </div>
+              </div>
+            </div>
+            <ArrowLeft className="w-5 h-5 rotate-180" />
+          </div>
+        </Button>
+
         {/* Appearance */}
         <div className="bg-card border border-border rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-4">
