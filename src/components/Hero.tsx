@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-image.jpg";
 import { Trophy, Users, Target, Zap } from "lucide-react";
+import { COPY } from "@/lib/copy";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -28,48 +29,46 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Text content */}
           <div className="text-center lg:text-left space-y-8">
-            <div className="inline-block">
+            <div className="inline-block animate-slide-up">
               <span className="px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-semibold">
-                🏆 Join the Competition
+                {COPY.hero.badge}
               </span>
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-              Turn Screen Time Into
+            <h1 className="text-5xl md:text-7xl font-bold leading-tight animate-slide-up" style={{ animationDelay: '0.1s' }}>
+              {COPY.hero.headline}
               <span className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-glow">
-                Epic Competition
+                {COPY.hero.headlineAccent}
               </span>
             </h1>
             
-            <p className="text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0">
-              Compete with your squad to spend less time on your phone. 
-              Weekly battles, live leaderboards, and bragging rights. 
-              Losers get roasted. Winners get glory.
+            <p className="text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              {COPY.hero.subheadline}
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-slide-up" style={{ animationDelay: '0.3s' }}>
               <Button 
                 size="lg" 
                 onClick={() => navigate("/auth")}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-primary/20 transition-all"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-primary/20 transition-all hover-lift"
               >
-                Start Competing
+                {COPY.hero.ctaPrimary}
               </Button>
               <Button 
                 size="lg" 
                 variant="outline"
-                className="text-lg border-primary/30 hover:bg-primary/10"
+                className="text-lg border-primary/30 hover:bg-primary/10 hover-lift"
                 onClick={scrollToHowItWorks}
               >
-                How It Works
+                {COPY.hero.ctaSecondary}
               </Button>
               <Button 
                 size="lg" 
                 variant="outline"
-                className="text-lg border-primary/30 hover:bg-primary/10"
+                className="text-lg border-primary/30 hover:bg-primary/10 hover-lift"
                 onClick={() => navigate("/demo")}
               >
-                View Demo
+                {COPY.hero.ctaDemo}
               </Button>
             </div>
           </div>

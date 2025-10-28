@@ -1,28 +1,29 @@
 import { Trophy, Users, TrendingDown, Zap } from "lucide-react";
+import { COPY } from "@/lib/copy";
 
 const features = [
   {
     icon: Users,
-    title: "Squad Up Weekly",
-    description: "Get randomly matched into solos, duos, or squads every week. New teams, new competition, maximum chaos.",
+    title: COPY.features.squadUp.title,
+    description: COPY.features.squadUp.description,
     gradient: "from-primary to-accent"
   },
   {
     icon: TrendingDown,
-    title: "Auto Screen Tracking",
-    description: "Connect via Apple Shortcuts. Your screen time syncs automatically. No manual logging, no cheating.",
+    title: COPY.features.autoTrack.title,
+    description: COPY.features.autoTrack.description,
     gradient: "from-accent to-primary"
   },
   {
     icon: Trophy,
-    title: "Win Glory & Bragging Rights",
-    description: "Dominate the leaderboard and flex on your friends. Top performers get legendary status.",
+    title: COPY.features.winGlory.title,
+    description: COPY.features.winGlory.description,
     gradient: "from-success to-primary"
   },
   {
     icon: Zap,
-    title: "Losers Get Roasted",
-    description: "Last place? Prepare for meme notifications and profile pic changes. The shame is real and hilarious.",
+    title: COPY.features.losersRoasted.title,
+    description: COPY.features.losersRoasted.description,
     gradient: "from-destructive to-accent"
   }
 ];
@@ -51,7 +52,7 @@ const Features = () => {
             return (
               <div 
                 key={index}
-                className="group relative bg-card border border-border rounded-2xl p-6 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10"
+                className="group relative bg-card border border-border rounded-2xl p-6 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover-lift"
               >
                 {/* Gradient background on hover */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`} />

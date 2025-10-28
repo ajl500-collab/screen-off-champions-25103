@@ -5,8 +5,10 @@ import EfficiencyInsights from "@/components/EfficiencyInsights";
 import Tips from "@/components/Tips";
 import CTA from "@/components/CTA";
 import Header from "@/components/Header";
+import { CoreLoopStrip } from "@/components/CoreLoopStrip";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { COPY } from "@/lib/copy";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -16,13 +18,16 @@ const Index = () => {
       <Header />
       <Hero />
       
+      {/* Core Loop Strip */}
+      <CoreLoopStrip />
+      
       {/* Quick Access to App */}
       <section className="py-12 bg-card border-y border-border">
         <div className="container mx-auto px-4 text-center">
           <Button 
             size="lg" 
             onClick={() => navigate("/dashboard")}
-            className="text-lg px-8"
+            className="text-lg px-8 hover-lift"
           >
             Open App <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
@@ -40,7 +45,7 @@ const Index = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-center md:text-left">
               <h3 className="text-xl font-bold mb-1">Screen<span className="italic">VS</span></h3>
-              <p className="text-sm text-muted-foreground">Turn screen time into competition.</p>
+              <p className="text-sm text-muted-foreground">{COPY.footer.tagline}</p>
             </div>
             
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
@@ -52,7 +57,7 @@ const Index = () => {
           </div>
           
           <div className="text-center mt-8 text-sm text-muted-foreground">
-            © 2025 Screen<span className="italic">VS</span>. All rights reserved. Made for the squad.
+            © 2025 Screen<span className="italic">VS</span>. {COPY.footer.copyright}
           </div>
         </div>
       </footer>
