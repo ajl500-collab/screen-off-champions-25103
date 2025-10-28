@@ -5,16 +5,16 @@ import ConfettiExplosion from "react-confetti-explosion";
 import { dashboardCopy } from "./copy";
 
 interface EfficiencyMeterProps {
-  value: number;
-  tier: "Gold" | "Silver" | "Bronze";
-  productiveMins: number;
+  efficiency: number;
+  tier: "Gold" | "Silver" | "Bronze" | "Diamond";
+  streakDays: number;
   deltaVsYesterday: number;
 }
 
 export const EfficiencyMeter = ({
-  value,
+  efficiency,
   tier,
-  productiveMins,
+  streakDays,
   deltaVsYesterday,
 }: EfficiencyMeterProps) => {
   const [animatedValue, setAnimatedValue] = useState(0);
@@ -30,7 +30,7 @@ export const EfficiencyMeter = ({
     const timer = setInterval(() => {
       step++;
       const progress = step / steps;
-      const currentValue = Math.floor(value * progress);
+      const currentValue = Math.floor(efficiency * progress);
       setAnimatedValue(currentValue);
 
       // Trigger confetti when crossing tier thresholds
@@ -41,12 +41,12 @@ export const EfficiencyMeter = ({
 
       if (step >= steps) {
         clearInterval(timer);
-        setAnimatedValue(value);
+        setAnimatedValue(efficiency);
       }
     }, interval);
 
     return () => clearInterval(timer);
-  }, [value, tier, celebrate, hasTriggeredConfetti]);
+  }, [efficiency, tier, celebrate, hasTriggeredConfetti]);
 
   const getTierColor = () => {
     switch (tier) {
@@ -155,12 +155,15 @@ export const EfficiencyMeter = ({
         {/* Description */}
         <div className="text-center space-y-2">
           <p className="text-sm text-foreground">
-            You spent <span className="font-bold text-success">{formatTime(productiveMins)}</span> on
-            productive apps
+            Efficiency Score: <span className="font-bold text-primary">{efficiency}</span>
           </p>
+          {streakDays >= 3 && (
+            <p className="text-sm text-muted-foreground">
+              🔥 {streakDays}-day streak
+            </p>
+          )}
           <p className="text-sm text-muted-foreground">
-            {Math.abs(deltaVsYesterday)}%{" "}
-            {deltaVsYesterday < 0 ? "better" : "worse"} than yesterday
+            {deltaVsYesterday >= 0 ? "+" : ""}{deltaVsYesterday}% vs yesterday
           </p>
         </div>
       </div>

@@ -246,6 +246,28 @@ export const insightsCopy: InsightsCopy = {
   streak: "🔥 {days}-day improvement streak",
 };
 
+interface ProfileCopy {
+  tiers: {
+    Diamond: string;
+    Gold: string;
+    Silver: string;
+    Bronze: string;
+  };
+  emptyBio: string;
+  emptyMemes: string;
+}
+
+export const profileCopy: ProfileCopy = {
+  tiers: {
+    Diamond: "You're basically a focus machine.",
+    Gold: "Elite tier. Keep the streak alive.",
+    Silver: "Solid performance. Gold is next.",
+    Bronze: "Bronze today. Tomorrow's comeback season.",
+  },
+  emptyBio: "Nothing here yet — time to build your story.",
+  emptyMemes: "No roasts yet — stay humble 😉.",
+};
+
 export const getInsightSummary = (
   productiveDelta: number,
   unproductiveDelta: number,

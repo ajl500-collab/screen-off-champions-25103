@@ -272,3 +272,40 @@ export const mockSyncData: MockSyncData = {
     },
   ],
 };
+
+export interface ProfileMeme {
+  id: number;
+  title: string;
+  date: string;
+}
+
+export interface MockProfileData {
+  name: string;
+  avatarUrl: string;
+  efficiency: {
+    value: number;
+    tier: "Gold" | "Silver" | "Bronze" | "Diamond";
+  };
+  bestStreak: number;
+  bestWeekDrop: number;
+  mostProductiveCategory: string;
+  squadsJoined: number;
+  memes: ProfileMeme[];
+  bio: string;
+}
+
+export const mockProfileData: MockProfileData = {
+  name: "Andrew",
+  avatarUrl: "🏆",
+  efficiency: { value: 78, tier: "Silver" },
+  bestStreak: 6,
+  bestWeekDrop: 42,
+  mostProductiveCategory: "Finance",
+  squadsJoined: 5,
+  memes: [
+    { id: 1, title: "Screen Time Surge 😂", date: "2 days ago" },
+    { id: 2, title: "Scroll King 👑", date: "1 week ago" },
+    { id: 3, title: "Notification Ninja 🥷", date: "2 weeks ago" },
+  ],
+  bio: "Known for: last-minute comebacks",
+};
