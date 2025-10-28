@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
         if (!minutes || !appName) continue;
 
         // Get or create category for this app
-        let category = 'neutral';
+        let category = 'utility'; // Default to utility (maps to neutral_mins column)
         try {
           // Check if app is already categorized
           const { data: existing } = await supabase
@@ -74,12 +74,12 @@ Deno.serve(async (req) => {
           dailyTotals[date] = { productive: 0, unproductive: 0, neutral: 0 };
         }
 
-        // Map category to field name
+        // Map category to aggregated minutes (utility category → neutral_mins column)
         if (category === 'productive') {
           dailyTotals[date].productive += minutes;
         } else if (category === 'unproductive') {
           dailyTotals[date].unproductive += minutes;
-        } else {
+        } else if (category === 'utility') {
           dailyTotals[date].neutral += minutes;
         }
 

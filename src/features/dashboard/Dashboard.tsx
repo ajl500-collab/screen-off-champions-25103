@@ -10,6 +10,7 @@ import { EfficiencyExplainer } from "../insights/EfficiencyExplainer";
 import { PowerTipsCarousel } from "../tips/PowerTipsCarousel";
 import { CoreLoopStrip } from "@/components/CoreLoopStrip";
 import { Badge } from "@/components/ui/badge";
+import { ManualTimeEntry } from "@/components/ManualTimeEntry";
 import { format, subDays } from "date-fns";
 
 export const Dashboard = () => {
@@ -81,11 +82,14 @@ export const Dashboard = () => {
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          {onboardingComplete && (
-            <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
-              Week 1 Active
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            <ManualTimeEntry />
+            {onboardingComplete && (
+              <Badge variant="outline" className="border-primary/20 bg-primary/5 text-primary">
+                Week 1 Active
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
