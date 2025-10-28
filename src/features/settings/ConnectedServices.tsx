@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Info } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -15,47 +15,49 @@ import {
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { mockSyncData, type SyncService } from "../dashboard/mockData";
+import { useSettings } from "@/lib/data/queries";
+import { setSyncConnected } from "@/lib/data/mutations";
 import { syncCopy } from "../dashboard/copy";
 import { useToast } from "@/hooks/use-toast";
 
-const STORAGE_KEY = "screenVS-connected-services";
+interface SyncService {
+  name: string;
+  enabled: boolean;
+  description: string;
+  icon: string;
+  disabled?: boolean;
+}
 
 export const ConnectedServices = () => {
-  const [services, setServices] = useState<SyncService[]>(mockSyncData.services);
+  const { data: settings } = useSettings();
   const [isTroubleshootOpen, setIsTroubleshootOpen] = useState(false);
   const { toast } = useToast();
 
-  // Load services state from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const data = JSON.parse(stored);
-      setServices(data);
-    }
-  }, []);
+  const services: SyncService[] = [
+    {
+      name: "Apple Shortcuts",
+      enabled: settings?.sync_connected || false,
+      description: "Primary data source for daily screen-time tracking.",
+      icon: "🍎",
+      disabled: false,
+    },
+    {
+      name: "Webhooks",
+      enabled: false,
+      description: "Future integration for Android or external imports.",
+      icon: "🌐",
+      disabled: true,
+    },
+  ];
 
-  // Save services state to localStorage
-  const saveServicesState = (updatedServices: SyncService[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedServices));
-  };
-
-  const handleToggle = (serviceName: string) => {
-    const updatedServices = services.map((service) =>
-      service.name === serviceName && !service.disabled
-        ? { ...service, enabled: !service.enabled }
-        : service
-    );
-    setServices(updatedServices);
-    saveServicesState(updatedServices);
-
-    const service = updatedServices.find((s) => s.name === serviceName);
-    if (service && !service.disabled) {
+  const handleToggle = async (serviceName: string) => {
+    if (serviceName === "Apple Shortcuts") {
+      const newEnabled = !settings?.sync_connected;
+      await setSyncConnected(newEnabled);
+      
       toast({
-        title: service.enabled ? "Service enabled" : "Service disabled",
-        description: `${service.name} has been ${
-          service.enabled ? "enabled" : "disabled"
-        }.`,
+        title: newEnabled ? "Service enabled" : "Service disabled",
+        description: `${serviceName} has been ${newEnabled ? "enabled" : "disabled"}.`,
         duration: 2000,
       });
     }

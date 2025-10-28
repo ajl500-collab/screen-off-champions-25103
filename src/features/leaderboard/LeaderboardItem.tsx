@@ -2,7 +2,7 @@ import { Trophy } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { RankDeltaIndicator } from "./RankDeltaIndicator";
 import { Badges } from "./Badges";
-import type { LeaderboardEntry } from "../dashboard/mockData";
+import type { LeaderboardEntry } from "@/lib/data/queries";
 
 interface LeaderboardItemProps {
   entry: LeaderboardEntry;

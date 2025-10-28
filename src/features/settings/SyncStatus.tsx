@@ -1,46 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Check, X, Loader2, RefreshCw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { mockSyncData } from "../dashboard/mockData";
+import { useSettings } from "@/lib/data/queries";
+import { setSyncConnected } from "@/lib/data/mutations";
 import { syncCopy } from "../dashboard/copy";
 import { useToast } from "@/hooks/use-toast";
-
-const STORAGE_KEY = "screenVS-sync-status";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const SyncStatus = () => {
-  const [connected, setConnected] = useState(mockSyncData.connected);
-  const [lastUpdated, setLastUpdated] = useState(mockSyncData.lastUpdatedMinutesAgo);
+  const { data: settings, isLoading } = useSettings();
   const [isReconnecting, setIsReconnecting] = useState(false);
   const { toast } = useToast();
 
-  // Load sync state from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const data = JSON.parse(stored);
-      setConnected(data.connected);
-      setLastUpdated(data.lastUpdated);
-    }
-  }, []);
-
-  // Save sync state to localStorage
-  const saveSyncState = (isConnected: boolean, minutesAgo: number) => {
-    const data = { connected: isConnected, lastUpdated: minutesAgo };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  };
-
-  // Mock reconnect flow
   const handleReconnect = async () => {
     setIsReconnecting(true);
     
-    // Simulate connection delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    const newConnected = !connected;
-    setConnected(newConnected);
-    setLastUpdated(0);
-    saveSyncState(newConnected, 0);
+    // Toggle connection status
+    const newConnected = !settings?.sync_connected;
+    await setSyncConnected(newConnected);
     
     setIsReconnecting(false);
     
@@ -51,6 +29,15 @@ export const SyncStatus = () => {
     });
   };
 
+  if (isLoading) {
+    return <Skeleton className="h-48 w-full" />;
+  }
+
+  const connected = settings?.sync_connected || false;
+  const lastUpdated = settings?.sync_last_updated 
+    ? Math.floor((Date.now() - new Date(settings.sync_last_updated).getTime()) / 60000)
+    : 0;
+  
   const status = connected ? syncCopy.connected : syncCopy.disconnected;
   const statusIcon = connected ? (
     <Check className="w-6 h-6 text-success" />

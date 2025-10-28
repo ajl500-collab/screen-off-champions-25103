@@ -1,34 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Clock, Users, Globe, UserPlus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LeaderboardItem } from "./LeaderboardItem";
-import { mockLeaderboardData } from "../dashboard/mockData";
+import { useLeaderboard } from "@/lib/data/queries";
 import { leaderboardCopy, getTopRankCopy } from "../dashboard/copy";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
 
 type FilterTab = "squad" | "global" | "friends";
 
 export const Leaderboard = () => {
   const [filter, setFilter] = useState<FilterTab>("squad");
-  const [timeRemaining, setTimeRemaining] = useState(mockLeaderboardData.weekEndsIn);
+  const [currentUserId, setCurrentUserId] = useState<string>("");
   const { toast } = useToast();
+  
+  const { data: leaderboard, isLoading } = useLeaderboard();
 
-  const { leaderboard, currentUserId } = mockLeaderboardData;
-  const currentUserEntry = leaderboard.find((e) => e.userId === currentUserId);
+  useState(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) setCurrentUserId(data.user.id);
+    });
+  });
+
+  const currentUserEntry = leaderboard?.find((e) => e.userId === currentUserId);
   const isTopThree = currentUserEntry && currentUserEntry.rank <= 3;
 
-  // Mock countdown timer
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // In a real app, calculate actual time remaining
-      // For mock, just keep the same value
-      setTimeRemaining(mockLeaderboardData.weekEndsIn);
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
+  if (isLoading) {
+    return (
+      <Card className="p-6">
+        <Skeleton className="h-64 w-full" />
+      </Card>
+    );
+  }
 
   const handleInviteFriends = () => {
     // Mock invite functionality
@@ -39,7 +45,7 @@ export const Leaderboard = () => {
     });
   };
 
-  if (leaderboard.length === 0) {
+  if (!leaderboard || leaderboard.length === 0) {
     return (
       <Card className="p-12 text-center">
         <div className="space-y-4">
@@ -63,11 +69,9 @@ export const Leaderboard = () => {
       <Card className="p-6 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border-primary/20">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-2xl font-bold">Leaderboard — Week 1</h2>
+            <h2 className="text-2xl font-bold">Leaderboard — This Week</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Resets in{" "}
-              <span className="font-semibold text-primary">{timeRemaining}</span> — keep
-              climbing.
+              Compete with your squad — keep climbing.
             </p>
           </div>
           <div className="flex items-center gap-2">

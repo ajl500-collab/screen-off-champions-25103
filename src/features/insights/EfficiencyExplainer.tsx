@@ -9,10 +9,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
-import { mockDashboardData } from "../dashboard/mockData";
+import { useDailyUsage, useWeeklyUsage } from "@/lib/data/queries";
+import { computeEfficiency, getTierFromScore } from "@/lib/data/efficiency";
 import { insightsCopy, getInsightSummary } from "../dashboard/copy";
 import { useConfetti } from "@/hooks/useConfetti";
 import ConfettiExplosion from "react-confetti-explosion";
+import { subDays } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const EfficiencyExplainer = () => {
   const [showFormula, setShowFormula] = useState(false);
@@ -24,7 +27,76 @@ export const EfficiencyExplainer = () => {
   const { isExploding, celebrate } = useConfetti();
   const [hasTriggeredConfetti, setHasTriggeredConfetti] = useState(false);
 
-  const { today, yesterday, efficiency, weeklyEfficiency } = mockDashboardData;
+  // Fetch real data
+  const { data: todayData, isLoading: todayLoading } = useDailyUsage(new Date());
+  const { data: yesterdayData } = useDailyUsage(subDays(new Date(), 1));
+  const { data: weeklyData } = useWeeklyUsage();
+
+  if (todayLoading) {
+    return (
+      <Card className="p-6">
+        <Skeleton className="h-64 w-full" />
+      </Card>
+    );
+  }
+
+  if (!todayData) {
+    return (
+      <Card className="p-6 text-center">
+        <div className="space-y-4">
+          <div className="text-4xl">📊</div>
+          <h3 className="text-xl font-bold">No data yet</h3>
+          <p className="text-sm text-muted-foreground">
+            Add your first day of screen time to see insights.
+          </p>
+        </div>
+      </Card>
+    );
+  }
+
+  const today = {
+    productiveMins: todayData.productive_mins,
+    unproductiveMins: todayData.unproductive_mins,
+    neutralMins: todayData.neutral_mins,
+  };
+
+  const yesterday = yesterdayData ? {
+    productiveMins: yesterdayData.productive_mins,
+    unproductiveMins: yesterdayData.unproductive_mins,
+    neutralMins: yesterdayData.neutral_mins,
+  } : { productiveMins: 0, unproductiveMins: 0, neutralMins: 0 };
+
+  const efficiencyResult = computeEfficiency({
+    productive: today.productiveMins,
+    unproductive: today.unproductiveMins,
+    neutral: today.neutralMins,
+  });
+
+  const yesterdayResult = yesterdayData ? computeEfficiency({
+    productive: yesterday.productiveMins,
+    unproductive: yesterday.unproductiveMins,
+    neutral: yesterday.neutralMins,
+  }) : { score: 0, tier: "Bronze" as const, color: "" };
+
+  const efficiency = {
+    value: efficiencyResult.score,
+    tier: efficiencyResult.tier,
+    streakDays: 0,
+    deltaVsYesterday: efficiencyResult.score - yesterdayResult.score,
+  };
+
+  const weeklyEfficiency = weeklyData?.map((day) => {
+    const dayResult = computeEfficiency({
+      productive: day.productive_mins,
+      unproductive: day.unproductive_mins,
+      neutral: day.neutral_mins,
+    });
+    return {
+      day: new Date(day.usage_date).toLocaleDateString('en-US', { weekday: 'short' }),
+      efficiency: dayResult.score,
+      change: 0,
+    };
+  }) || [];
 
   const totalMins = today.productiveMins + today.unproductiveMins + today.neutralMins;
   const totalHours = Math.floor(totalMins / 60);

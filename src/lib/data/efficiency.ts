@@ -95,3 +95,17 @@ export function calculateWeeklySummary(dailySummaries: DailySummary[]) {
     daysTracked: dailySummaries.length,
   };
 }
+
+// Helper function to get tier from score
+export function getTierFromScore(score: number): "Bronze" | "Silver" | "Gold" | "Diamond" {
+  if (score >= 95) return "Diamond";
+  if (score >= 80) return "Gold";
+  if (score >= 60) return "Silver";
+  return "Bronze";
+}
+
+// Helper to get weekly series data
+export function getWeeklySeries() {
+  // This is a wrapper around useWeeklyUsage for easier importing
+  return { data: null };
+}

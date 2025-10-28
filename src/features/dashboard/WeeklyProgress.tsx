@@ -7,7 +7,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { DayData } from "./mockData";
+
+export interface DayData {
+  day: string;
+  total: number;
+  productive: number;
+  unproductive: number;
+  neutral: number;
+}
 
 interface WeeklyProgressProps {
   weeklyData: DayData[];

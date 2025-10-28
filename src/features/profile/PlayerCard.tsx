@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Crown, Share2, Trophy } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { mockProfileData } from "../dashboard/mockData";
+import { useProfile, useSettings, useStreak } from "@/lib/data/queries";
+import { getTierFromScore } from "@/lib/data/efficiency";
+import { updateSettings } from "@/lib/data/mutations";
 import { profileCopy } from "../dashboard/copy";
 import { PlayerStatsGrid } from "./PlayerStatsGrid";
 import { MemeHistory } from "./MemeHistory";
@@ -11,6 +13,7 @@ import { EfficiencyMeter } from "../dashboard/EfficiencyMeter";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useConfetti } from "@/hooks/useConfetti";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const getTierEmoji = (tier: string) => {
   switch (tier) {
@@ -43,30 +46,45 @@ const getTierGradient = (tier: string) => {
 };
 
 export const PlayerCard = () => {
-  const [bio, setBio] = useState(
-    localStorage.getItem("playerBio") || mockProfileData.bio
-  );
+  const { data: profile, isLoading } = useProfile();
+  const { data: settings } = useSettings();
+  const { data: streak } = useStreak();
+  const [bio, setBio] = useState("");
   const [isEditingBio, setIsEditingBio] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isExploding, celebrate } = useConfetti();
 
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      localStorage.setItem("playerBio", bio);
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [bio]);
+    if (settings?.bio) {
+      setBio(settings.bio);
+    }
+  }, [settings]);
 
-  const handleBioBlur = () => {
-    localStorage.setItem("playerBio", bio);
+  const handleBioBlur = async () => {
+    await updateSettings({ bio });
     setIsEditingBio(false);
     toast({
       title: "Bio updated",
       description: "Your story has been saved.",
     });
   };
+
+  if (isLoading) {
+    return <Skeleton className="h-96 w-full" />;
+  }
+
+  if (!profile) {
+    return (
+      <Card className="p-6 text-center">
+        <p className="text-muted-foreground">Unable to load profile</p>
+      </Card>
+    );
+  }
+
+  const efficiency = profile.efficiency_score || 0;
+  const tier = getTierFromScore(efficiency);
+  const name = profile.display_name || profile.username;
 
   const handleShareCard = () => {
     toast({
@@ -76,19 +94,17 @@ export const PlayerCard = () => {
   };
 
   useEffect(() => {
-    if (mockProfileData.efficiency.value >= 80) {
+    if (efficiency >= 80) {
       const timer = setTimeout(() => celebrate(), 500);
       return () => clearTimeout(timer);
     }
-  }, [celebrate]);
+  }, [celebrate, efficiency]);
 
   return (
     <div className="space-y-6 pb-6">
       {/* Header Card with Avatar and Tier */}
       <Card
-        className={`overflow-hidden border-2 bg-gradient-to-br ${getTierGradient(
-          mockProfileData.efficiency.tier
-        )}`}
+        className={`overflow-hidden border-2 bg-gradient-to-br ${getTierGradient(tier)}`}
       >
         <CardContent className="p-6">
           <div className="flex flex-col items-center text-center space-y-4">
@@ -96,33 +112,30 @@ export const PlayerCard = () => {
             <div className="relative group">
               <div
                 className={`w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-5xl border-4 border-background shadow-xl transition-transform duration-300 hover:scale-105 ${
-                  mockProfileData.efficiency.value < 60 ? "grayscale" : ""
+                  efficiency < 60 ? "grayscale" : ""
                 }`}
               >
-                {mockProfileData.avatarUrl}
+                {profile.avatar_emoji || "😎"}
               </div>
               {/* Tier Badge Overlay */}
               <div
                 className={`absolute -bottom-1 -right-1 w-10 h-10 rounded-full bg-gradient-to-br ${getTierGradient(
-                  mockProfileData.efficiency.tier
+                  tier
                 )} border-2 border-background flex items-center justify-center text-2xl shadow-lg ${
-                  mockProfileData.efficiency.tier === "Gold" ||
-                  mockProfileData.efficiency.tier === "Diamond"
-                    ? "animate-pulse"
-                    : ""
+                  tier === "Gold" || tier === "Diamond" ? "animate-pulse" : ""
                 }`}
               >
-                {getTierEmoji(mockProfileData.efficiency.tier)}
+                {getTierEmoji(tier)}
               </div>
             </div>
 
             {/* Name and Tier */}
             <div>
-              <h2 className="text-2xl font-bold mb-1">{mockProfileData.name}</h2>
+              <h2 className="text-2xl font-bold mb-1">{name}</h2>
               <div className="flex items-center gap-2 justify-center">
                 <Crown className="w-4 h-4 text-primary" />
                 <span className="text-sm font-semibold text-primary">
-                  {mockProfileData.efficiency.tier} Tier
+                  {tier} Tier
                 </span>
               </div>
             </div>
@@ -156,7 +169,7 @@ export const PlayerCard = () => {
 
             {/* Tier Message */}
             <p className="text-sm text-muted-foreground italic">
-              {profileCopy.tiers[mockProfileData.efficiency.tier]}
+              {profileCopy.tiers[tier as keyof typeof profileCopy.tiers]}
             </p>
           </div>
         </CardContent>
@@ -172,10 +185,10 @@ export const PlayerCard = () => {
             Current Performance
           </h3>
           <EfficiencyMeter
-            efficiency={mockProfileData.efficiency.value}
-            tier={mockProfileData.efficiency.tier}
-            streakDays={mockProfileData.bestStreak}
-            deltaVsYesterday={6}
+            efficiency={efficiency}
+            tier={tier}
+            streakDays={streak || 0}
+            deltaVsYesterday={0}
           />
         </CardContent>
       </Card>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Flame, TrendingDown, BookOpen, Users } from "lucide-react";
-import { mockProfileData } from "../dashboard/mockData";
+import { useUserStats } from "@/lib/data/queries";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface StatItemProps {
   icon: React.ReactNode;
@@ -47,29 +48,45 @@ const StatItem = ({ icon, label, value, animateValue = false }: StatItemProps) =
 };
 
 export const PlayerStatsGrid = () => {
+  const { data: userStats, isLoading } = useUserStats();
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-24 w-full" />
+        ))}
+      </div>
+    );
+  }
+
+  if (!userStats) {
+    return null;
+  }
+
   const stats = [
     {
       icon: <Flame className="w-5 h-5" />,
       label: "Best Streak",
-      value: mockProfileData.bestStreak,
+      value: userStats.bestStreak,
       animateValue: true,
     },
     {
       icon: <TrendingDown className="w-5 h-5" />,
       label: "Best Week",
-      value: `–${mockProfileData.bestWeekDrop}%`,
+      value: userStats.bestWeekDrop > 0 ? `–${userStats.bestWeekDrop}%` : "0%",
       animateValue: false,
     },
     {
       icon: <BookOpen className="w-5 h-5" />,
       label: "Top Category",
-      value: mockProfileData.mostProductiveCategory,
+      value: userStats.topCategory,
       animateValue: false,
     },
     {
       icon: <Users className="w-5 h-5" />,
       label: "Squads Joined",
-      value: mockProfileData.squadsJoined,
+      value: userStats.squadsJoined,
       animateValue: true,
     },
   ];
