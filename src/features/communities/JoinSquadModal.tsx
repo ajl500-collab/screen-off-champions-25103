@@ -14,7 +14,7 @@ import { COPY } from "@/lib/copy";
 interface JoinSquadModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onJoinSquad: (inviteLink: string) => boolean;
+  onJoinSquad: (inviteLink: string) => Promise<boolean>;
 }
 
 export const JoinSquadModal = ({
@@ -25,7 +25,7 @@ export const JoinSquadModal = ({
   const [inviteLink, setInviteLink] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!inviteLink.trim()) {
@@ -38,7 +38,7 @@ export const JoinSquadModal = ({
       return;
     }
 
-    const success = onJoinSquad(inviteLink.trim());
+    const success = await onJoinSquad(inviteLink.trim());
     
     if (success) {
       // Reset and close

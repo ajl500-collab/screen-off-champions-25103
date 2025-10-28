@@ -242,6 +242,12 @@ export const COPY = {
     quickJoinSuccess: {
       title: "Joined squad! 🎉",
       description: (name: string) => `You're now part of ${name}.`
+    },
+    toasts: {
+      created: "Squad created! Invite link copied ✅",
+      joined: "Welcome aboard. Prepare to get judged.",
+      invalidLink: "Invalid link — double-check and try again.",
+      quickJoined: (name: string) => `Joined ${name}! 🎉`
     }
   }
 } as const;
