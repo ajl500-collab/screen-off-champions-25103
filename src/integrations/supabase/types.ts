@@ -179,6 +179,74 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_usage: {
+        Row: {
+          id: string
+          inserted_at: string | null
+          neutral_mins: number
+          productive_mins: number
+          source: string | null
+          unproductive_mins: number
+          updated_at: string | null
+          usage_date: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          inserted_at?: string | null
+          neutral_mins?: number
+          productive_mins?: number
+          source?: string | null
+          unproductive_mins?: number
+          updated_at?: string | null
+          usage_date: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          inserted_at?: string | null
+          neutral_mins?: number
+          productive_mins?: number
+          source?: string | null
+          unproductive_mins?: number
+          updated_at?: string | null
+          usage_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      memberships: {
+        Row: {
+          id: string
+          joined_at: string | null
+          role: string | null
+          squad_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string | null
+          role?: string | null
+          squad_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string | null
+          role?: string | null
+          squad_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memberships_squad_id_fkey"
+            columns: ["squad_id"]
+            isOneToOne: false
+            referencedRelation: "squads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_emoji: string | null
@@ -212,6 +280,69 @@ export type Database = {
           total_screen_time_minutes?: number | null
           updated_at?: string | null
           username?: string
+        }
+        Relationships: []
+      }
+      settings: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          ingest_token_hash: string | null
+          plan: string | null
+          sync_connected: boolean | null
+          sync_last_updated: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string | null
+          ingest_token_hash?: string | null
+          plan?: string | null
+          sync_connected?: boolean | null
+          sync_last_updated?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string | null
+          ingest_token_hash?: string | null
+          plan?: string | null
+          sync_connected?: boolean | null
+          sync_last_updated?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      squads: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          emoji: string | null
+          id: string
+          invite_code: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          emoji?: string | null
+          id?: string
+          invite_code: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          emoji?: string | null
+          id?: string
+          invite_code?: string
+          name?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -387,10 +518,8 @@ export type Database = {
         Args: { p_date: string; p_user_id: string }
         Returns: number
       }
-      generate_invite_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_invite_code: { Args: never; Returns: string }
+      generate_squad_invite_code: { Args: never; Returns: string }
     }
     Enums: {
       app_category: "productive" | "unproductive" | "utility"
