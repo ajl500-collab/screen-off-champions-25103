@@ -68,9 +68,9 @@ export const Dashboard = () => {
             Efficiency Meter
           </h2>
           <EfficiencyMeter
-            value={efficiency.value}
+            efficiency={efficiency.value}
             tier={efficiency.tier}
-            productiveMins={today.productiveMins}
+            streakDays={efficiency.streakDays}
             deltaVsYesterday={efficiency.deltaVsYesterday}
           />
         </section>
