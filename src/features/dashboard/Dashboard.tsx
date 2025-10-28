@@ -5,6 +5,7 @@ import { mockDashboardData } from "./mockData";
 import { TodayAtAGlance } from "./TodayAtAGlance";
 import { WeeklyProgress } from "./WeeklyProgress";
 import { EfficiencyMeter } from "./EfficiencyMeter";
+import { EfficiencyExplainer } from "../insights/EfficiencyExplainer";
 import { Badge } from "@/components/ui/badge";
 
 export const Dashboard = () => {
@@ -71,6 +72,11 @@ export const Dashboard = () => {
             productiveMins={today.productiveMins}
             deltaVsYesterday={efficiency.deltaVsYesterday}
           />
+        </section>
+
+        {/* Section 4: Efficiency Explainer */}
+        <section>
+          <EfficiencyExplainer />
         </section>
       </div>
     </div>

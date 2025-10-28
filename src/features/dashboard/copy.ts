@@ -28,6 +28,23 @@ interface LeaderboardCopy {
   };
 }
 
+interface InsightsCopy {
+  summaries: {
+    productiveUp: string[];
+    productiveDown: string[];
+    unproductiveUp: string[];
+    unproductiveDown: string[];
+    balanced: string[];
+    legendary: string[];
+  };
+  formula: {
+    title: string;
+    explanation: string;
+    gotIt: string;
+  };
+  streak: string;
+}
+
 export const dashboardCopy: DashboardCopy = {
   improvement: [
     "🔥 Big comeback today—keep that energy.",
@@ -137,4 +154,122 @@ export const getTopRankCopy = (): string => {
   return leaderboardCopy.topOne[
     Math.floor(Math.random() * leaderboardCopy.topOne.length)
   ];
+};
+
+export const insightsCopy: InsightsCopy = {
+  summaries: {
+    productiveUp: [
+      "Productive up +{productiveDelta}%, Unproductive down -{unproductiveDelta}%. Keep rolling.",
+      "Legendary focus mode activated. +{productiveDelta}% productive.",
+      "Numbers don't lie—you crushed it today. +{productiveDelta}%.",
+      "That's what we're talking about. Productive +{productiveDelta}%.",
+    ],
+    productiveDown: [
+      "Productive down -{productiveDelta}%. Tomorrow's redemption arc.",
+      "Your thumb deserved a day off. Productive -{productiveDelta}%.",
+      "Not your best day. Productive -{productiveDelta}%, but you'll bounce back.",
+    ],
+    unproductiveUp: [
+      "Unproductive time spiked +{unproductiveDelta}%. Touch grass.",
+      "Scroll city today. Unproductive +{unproductiveDelta}%.",
+      "Your phone won today. Unproductive +{unproductiveDelta}%.",
+      "Big yikes. Unproductive +{unproductiveDelta}%.",
+    ],
+    unproductiveDown: [
+      "Unproductive down -{unproductiveDelta}%. That's progress.",
+      "Less doom scrolling. Unproductive -{unproductiveDelta}%.",
+      "Cutting the waste. Unproductive -{unproductiveDelta}%.",
+    ],
+    balanced: [
+      "Neutral time steady (+{neutralDelta}%), solid balance today.",
+      "Right in the pocket. Balanced day.",
+      "Consistency unlocked. Neutral ±{neutralDelta}%.",
+    ],
+    legendary: [
+      "Legendary day. Efficiency through the roof.",
+      "You're unstoppable. Keep this energy.",
+      "Peak performance unlocked.",
+    ],
+  },
+  formula: {
+    title: "How we calculate it",
+    explanation:
+      "Efficiency = (Productive × positive weight) – (Unproductive × negative weight). Neutral apps don't count. Consistency & streaks add bonus points.",
+    gotIt: "Got it 👍",
+  },
+  streak: "🔥 {days}-day improvement streak",
+};
+
+export const getInsightSummary = (
+  productiveDelta: number,
+  unproductiveDelta: number,
+  neutralDelta: number,
+  efficiency: number
+): string => {
+  // Legendary performance
+  if (efficiency >= 85) {
+    return insightsCopy.summaries.legendary[
+      Math.floor(Math.random() * insightsCopy.summaries.legendary.length)
+    ];
+  }
+
+  // Productive improved significantly
+  if (productiveDelta > 15) {
+    const copy =
+      insightsCopy.summaries.productiveUp[
+        Math.floor(Math.random() * insightsCopy.summaries.productiveUp.length)
+      ];
+    return copy
+      .replace("{productiveDelta}", Math.abs(productiveDelta).toFixed(0))
+      .replace("{unproductiveDelta}", Math.abs(unproductiveDelta).toFixed(0));
+  }
+
+  // Unproductive spiked
+  if (unproductiveDelta > 15) {
+    const copy =
+      insightsCopy.summaries.unproductiveUp[
+        Math.floor(
+          Math.random() * insightsCopy.summaries.unproductiveUp.length
+        )
+      ];
+    return copy.replace(
+      "{unproductiveDelta}",
+      Math.abs(unproductiveDelta).toFixed(0)
+    );
+  }
+
+  // Unproductive decreased
+  if (unproductiveDelta < -10) {
+    const copy =
+      insightsCopy.summaries.unproductiveDown[
+        Math.floor(
+          Math.random() * insightsCopy.summaries.unproductiveDown.length
+        )
+      ];
+    return copy.replace(
+      "{unproductiveDelta}",
+      Math.abs(unproductiveDelta).toFixed(0)
+    );
+  }
+
+  // Productive decreased
+  if (productiveDelta < -10) {
+    const copy =
+      insightsCopy.summaries.productiveDown[
+        Math.floor(
+          Math.random() * insightsCopy.summaries.productiveDown.length
+        )
+      ];
+    return copy.replace(
+      "{productiveDelta}",
+      Math.abs(productiveDelta).toFixed(0)
+    );
+  }
+
+  // Balanced/neutral
+  const copy =
+    insightsCopy.summaries.balanced[
+      Math.floor(Math.random() * insightsCopy.summaries.balanced.length)
+    ];
+  return copy.replace("{neutralDelta}", Math.abs(neutralDelta).toFixed(0));
 };

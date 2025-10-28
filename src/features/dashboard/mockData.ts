@@ -6,6 +6,12 @@ export interface DayData {
   neutral: number;
 }
 
+export interface EfficiencyDayData {
+  day: string;
+  efficiency: number;
+  change: number;
+}
+
 export interface MockDashboardData {
   today: {
     productiveMins: number;
@@ -24,6 +30,7 @@ export interface MockDashboardData {
     deltaVsYesterday: number;
   };
   weekly: DayData[];
+  weeklyEfficiency: EfficiencyDayData[];
 }
 
 export interface LeaderboardEntry {
@@ -68,6 +75,15 @@ export const mockDashboardData: MockDashboardData = {
     { day: "Fri", total: 330, productive: 120, unproductive: 180, neutral: 30 },
     { day: "Sat", total: 480, productive: 100, unproductive: 320, neutral: 60 },
     { day: "Sun", total: 372, productive: 135, unproductive: 192, neutral: 45 },
+  ],
+  weeklyEfficiency: [
+    { day: "Mon", efficiency: 71, change: -3 },
+    { day: "Tue", efficiency: 74, change: 3 },
+    { day: "Wed", efficiency: 73, change: -1 },
+    { day: "Thu", efficiency: 75, change: 2 },
+    { day: "Fri", efficiency: 68, change: -7 },
+    { day: "Sat", efficiency: 62, change: -6 },
+    { day: "Sun", efficiency: 76, change: 14 },
   ],
 };
 

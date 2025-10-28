@@ -1,5 +1,78 @@
 # Changelog - UX Refresh
 
+## Phase 5: Efficiency Explainer - UI + Data Insight Component (2025-10-28)
+
+### New Files Created
+
+- **`src/features/insights/EfficiencyExplainer.tsx`**: Interactive insights component with donut chart showing productive/unproductive/neutral time split, 7-day efficiency trend chart, auto-generated summaries, and expandable formula card.
+
+- **`README-EFFICIENCY.md`**: Complete documentation of insights component architecture, animations, copy logic, and data visualization patterns.
+
+### Modified Files
+
+- **`src/features/dashboard/mockData.ts`**: Added `weeklyEfficiency` array with 7 days of efficiency scores and daily change percentages. Added `EfficiencyDayData` interface.
+
+- **`src/features/dashboard/copy.ts`**: Added `InsightsCopy` interface and `insightsCopy` object with context-aware summaries (productive up/down, unproductive up/down, balanced, legendary). Added `getInsightSummary()` function with delta-based logic.
+
+- **`CHANGELOG.md`**: Added Phase 5 documentation.
+
+### Features Implemented
+
+- **Donut Chart Visualization**: Shows productive (green), unproductive (red), and neutral (gray) time split with animated drawing effect (700ms)
+- **Center Label**: Total time and efficiency score with count-up animation
+- **7-Day Trend Chart**: Horizontal bar chart with color-coded efficiency (green = improvement, red = decline)
+- **Streak Indicator**: Shows flame icon when streak ≥3 days with message
+- **Auto-Generated Summaries**: Context-aware copy based on performance deltas (6 different categories)
+- **Formula Card**: Expandable "Why?" toggle showing plain-English efficiency calculation
+- **Tooltips**: Hover states on chart segments and trend bars
+- **Confetti Trigger**: Celebration animation when efficiency ≥80 (Gold tier)
+- **Staggered Animations**: Trend bars enter with 50ms delay each
+- **Responsive Grid**: Two-column on desktop, stacked on mobile
+
+### Copy Tone Examples
+
+| Context              | Example                                                      |
+| -------------------- | ------------------------------------------------------------ |
+| Productive Up        | "Legendary focus mode activated. +31% productive."           |
+| Unproductive Spike   | "Unproductive time spiked +22%. Touch grass."                |
+| Balanced             | "Right in the pocket. Balanced day."                         |
+| Legendary (≥85%)     | "You're unstoppable. Keep this energy."                      |
+
+### Visual Design
+
+- **Chart Colors**: Productive (#4ADE80), Unproductive (#F87171), Neutral (#A3A3A3)
+- **Animations**: 700ms donut draw, 600ms count-up, 50ms stagger
+- **Layout**: 256px donut chart, 80px trend height
+- **Typography**: Title (text-xl), center (text-3xl), body (text-sm)
+- **Spacing**: Consistent with dashboard design system
+
+### Data Flow
+
+- Uses `mockDashboardData` from `mockData.ts`
+- Calculates percentage deltas for all three categories
+- Compares today vs yesterday for summary logic
+- Displays 7-day efficiency trend with daily changes
+- Triggers confetti once per session for Gold tier
+
+### Accessibility
+
+- All animations respect `prefers-reduced-motion`
+- Recharts tooltips provide context
+- Color contrast meets WCAG AA
+- Keyboard navigation fully supported
+
+### User Journey
+
+1. Component mounts with donut chart animation
+2. Slices draw from 0 → actual value over 700ms
+3. Center label counts up simultaneously
+4. Trend bars slide in with stagger
+5. Summary sentence displays based on performance
+6. User can toggle formula card for explanation
+7. Confetti triggers if Gold tier achieved
+
+---
+
 ## Phase 4: Leaderboard Redesign - Motion + Status + Weekly Rhythm (2025-10-28)
 
 ### New Files Created
