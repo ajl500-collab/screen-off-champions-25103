@@ -1,5 +1,78 @@
 # Changelog - UX Refresh
 
+## Phase 3: Dashboard Redesign - Emotion + Progression (2025-10-28)
+
+### New Files Created
+
+- **`src/features/dashboard/Dashboard.tsx`**: Main dashboard component that orchestrates three vertical sections with mock data integration.
+
+- **`src/features/dashboard/TodayAtAGlance.tsx`**: Daily performance snapshot with animated count-up, delta indicators, and motivational copy.
+
+- **`src/features/dashboard/WeeklyProgress.tsx`**: 7-day bar chart component with stacked segments, tooltips, and streak indicator with animated flame.
+
+- **`src/features/dashboard/EfficiencyMeter.tsx`**: Circular progress ring with tier badges (Gold/Silver/Bronze), gradient colors, and confetti celebration.
+
+- **`src/features/dashboard/mockData.ts`**: Mock data structure for dashboard metrics (today, yesterday, efficiency, weekly).
+
+- **`src/features/dashboard/copy.ts`**: Centralized motivational copy with context-aware messages (improvement/decline/neutral).
+
+- **`README-DASHBOARD.md`**: Complete documentation of dashboard architecture, animations, design system integration, and testing scenarios.
+
+### Modified Files
+
+- **`src/pages/Dashboard.tsx`**: Replaced entire implementation with import of new modular `Dashboard` component from `/features/dashboard/`.
+
+- **`CHANGELOG.md`**: Added Phase 3 documentation.
+
+### Features Implemented
+
+- **Three Vertical Sections**: Today At A Glance → Weekly Progress → Efficiency Meter
+- **Animated Count-Up**: Numbers smoothly animate from 0 → value (800ms)
+- **Delta Indicators**: Green/red arrows showing improvement or decline vs yesterday
+- **7-Day Bar Chart**: Stacked segments (productive/unproductive/neutral) with slide-in animation
+- **Streak Tracking**: Flame icon pulses when streak ≥3 days
+- **Tier System**: Gold (≥80%), Silver (60-79%), Bronze (<60%) with dynamic gradients
+- **Confetti Celebration**: Triggers when crossing Gold threshold
+- **Motivational Copy**: Context-aware messages based on performance
+- **Tooltips**: Hover/tap to see detailed breakdowns on weekly chart
+- **"Week 1 Active" Badge**: Shows when onboarding is complete
+- **Reduced Motion Support**: All animations respect accessibility preferences
+
+### Design System Integration
+
+- Uses semantic tokens from `index.css` (all HSL colors)
+- Consistent spacing: `px-4 py-3` baseline
+- Font hierarchy: h2 (1.5rem), h3 (1.2rem), body (0.9rem)
+- Dark gradient background with soft shadows
+- Mobile-first responsive design (320px+)
+
+### Copy Tone Examples
+
+| Context     | Example                                   |
+| ----------- | ----------------------------------------- |
+| Improvement | "🔥 Big comeback today—keep that energy." |
+| Decline     | "Bruh, 5h on TikTok? Rough."              |
+| Neutral     | "Holding steady—momentum's everything."   |
+
+### State Management
+
+- Integrates with `OnboardingContext` for completion status
+- Mock data only (no backend calls yet)
+- Ready for real-time Supabase integration
+- State persists via context `localStorage`
+
+### User Journey
+
+1. User completes onboarding → redirected to `/dashboard`
+2. Dashboard renders with three animated sections
+3. Count-up animations play on mount
+4. Weekly bars slide in left-to-right with stagger
+5. Efficiency meter fills to current value
+6. Confetti triggers if tier = Gold
+7. "Week 1 Active" badge visible in header
+
+---
+
 ## Phase 2: Onboarding Flow (2025-10-28)
 
 ### New Files Created
