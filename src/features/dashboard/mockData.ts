@@ -351,3 +351,42 @@ export const mockMemesData: MockMemesData = {
     { id: 9, template: "Roasted with love 🔥 — back on track tomorrow, {name}." },
   ],
 };
+
+export interface PlanOption {
+  id: "free" | "pro";
+  name: string;
+  price: number;
+  features: string[];
+}
+
+export interface MockPlanData {
+  current: "free" | "pro";
+  options: PlanOption[];
+}
+
+export const mockPlanData: MockPlanData = {
+  current: "free",
+  options: [
+    {
+      id: "free",
+      name: "Free Forever",
+      price: 0,
+      features: [
+        "Weekly challenges",
+        "Leaderboard access",
+        "Basic insights",
+      ],
+    },
+    {
+      id: "pro",
+      name: "Pro Mode",
+      price: 4.99,
+      features: [
+        "Advanced efficiency insights",
+        "Custom meme packs",
+        "Priority squads",
+        "Unlimited roasts",
+      ],
+    },
+  ],
+};

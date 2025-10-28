@@ -5,6 +5,37 @@ All notable changes to ScreenVS will be documented in this file.
 ## [Unreleased]
 
 ### Added
+
+#### Pricing & Plans (Phase 9)
+- **PricingPage Component** (`/features/pricing/PricingPage.tsx`)
+  - Premium dark-themed pricing page
+  - Two-tier pricing cards (Free Forever & Pro Mode)
+  - Animated gradient border on Pro card
+  - Hover lift effects on all cards
+  - Current plan state with localStorage persistence
+  - Confetti burst on Pro upgrade
+  - Toast feedback for plan changes
+- **FAQAccordion Component** (`/features/pricing/FAQAccordion.tsx`)
+  - Collapsible FAQ with 5 questions
+  - Smooth expand/collapse animation (300ms)
+  - Rotating chevron indicator
+  - All closed by default
+- **Pricing Route** (`/pricing`)
+  - Added to main App routing
+  - Accessible throughout app
+- **Mock Plan Data** (`mockData.ts`)
+  - Plan options with features and pricing
+  - Current plan state tracking
+- **Pricing Copy** (`copy.ts`)
+  - All pricing text centralized
+  - Cheeky, confident tone
+  - FAQ questions and answers
+  - Toast messages for interactions
+- **README-PRICING.md**
+  - Complete feature documentation
+  - Architecture overview
+  - Test cases and acceptance criteria
+  - Future enhancement roadmap
 - Meme Bank and Roast Engine feature with safe humor system
 - MemeBank.tsx component with user/community meme tabs
 - MemeUploadForm.tsx for adding new memes with URL validation

@@ -131,5 +131,72 @@ export const COPY = {
   footer: {
     tagline: "Turn screen time into competition.",
     copyright: "All rights reserved. Made for the squad."
+  },
+
+  // Pricing
+  pricing: {
+    header: {
+      title: "Pick Your Plan.",
+      subtitle: "Both versions make you less of a scroll zombie — one just does it faster."
+    },
+    free: {
+      title: "Forever free (unless you lose a bet).",
+      tagline: "Perfect for casual competitors and professional procrastinators.",
+      features: [
+        "Weekly challenges",
+        "Leaderboard access",
+        "Basic insights",
+        "Community meme pool"
+      ]
+    },
+    pro: {
+      title: "Cheaper than your doomscroll habit.",
+      tagline: "For people who take self-improvement way too seriously.",
+      features: [
+        "Advanced efficiency insights",
+        "Custom meme packs",
+        "Priority squads",
+        "Unlimited roasts",
+        "7-day trend analysis",
+        "Early access to new features"
+      ]
+    },
+    faq: {
+      title: "Frequently Asked Questions",
+      questions: [
+        {
+          question: "Will I really get roasted?",
+          answer: "Lovingly. Never maliciously. We promise."
+        },
+        {
+          question: "Can I play solo?",
+          answer: "Yes. Solo, duos, or squads — your choice every week."
+        },
+        {
+          question: "Does it work without Apple?",
+          answer: "Yep. You can use demo mode or Webhook connections (coming soon)."
+        },
+        {
+          question: "Do I lose progress if I downgrade?",
+          answer: "Nope. You'll just miss out on advanced insights and meme packs."
+        },
+        {
+          question: "Can I cancel anytime?",
+          answer: "Always. No guilt. No exit surveys asking 'why?'."
+        }
+      ]
+    },
+    cta: {
+      title: "Ready to reclaim your focus?",
+      button: "Upgrade Now →"
+    },
+    proActivated: {
+      title: "Pro Mode activated 💸",
+      description: "Welcome to the upper tier."
+    },
+    stayFree: {
+      title: "Still free. Still focused.",
+      description: "You're already competing at a high level."
+    }
   }
 } as const;
