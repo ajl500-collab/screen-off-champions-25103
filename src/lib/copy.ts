@@ -198,5 +198,50 @@ export const COPY = {
       title: "Still free. Still focused.",
       description: "You're already competing at a high level."
     }
+  },
+
+  // Communities
+  communities: {
+    header: {
+      title: "Your Squads",
+      subtitle: "Compete, roast, and grow together."
+    },
+    activeSquads: "Active Squads",
+    empty: {
+      title: "You haven't joined a squad yet.",
+      subtitle: "Everyone needs someone to roast them into greatness.",
+      suggestionsTitle: "Quick start with these:"
+    },
+    suggestions: [
+      { name: "Study Crew", emoji: "🎓" },
+      { name: "Gym Bros", emoji: "💪" },
+      { name: "Focus Queens", emoji: "🧘" },
+      { name: "Dorm Rivals", emoji: "🎮" }
+    ],
+    createModal: {
+      title: "Create New Squad",
+      description: "Name your squad. Keep it clever.",
+      nameLabel: "Squad Name",
+      emojiLabel: "Choose an emoji",
+      submitButton: "Create & Copy Invite Link"
+    },
+    joinModal: {
+      title: "Join via Invite Link",
+      description: "Paste the invite link you received from a friend.",
+      linkLabel: "Invite Link",
+      submitButton: "Join Squad"
+    },
+    createSuccess: {
+      title: "Squad created! 🎉",
+      description: "Invite link copied to clipboard."
+    },
+    joinSuccess: {
+      title: "Welcome aboard. 🚀",
+      description: "Prepare to get judged."
+    },
+    quickJoinSuccess: {
+      title: "Joined squad! 🎉",
+      description: (name: string) => `You're now part of ${name}.`
+    }
   }
 } as const;

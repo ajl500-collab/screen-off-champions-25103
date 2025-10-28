@@ -6,6 +6,48 @@ All notable changes to ScreenVS will be documented in this file.
 
 ### Added
 
+#### Communities & Invites (Phase 10)
+- **CommunitiesPage Component** (`/features/communities/CommunitiesPage.tsx`)
+  - Squad management interface
+  - Responsive grid layout (1-col mobile, 2-col desktop)
+  - Sticky header with glass morphism
+  - Empty state with quick-join suggestions
+  - localStorage persistence for squads
+  - Confetti bursts on squad actions
+- **SquadCard Component** (`/features/communities/SquadCard.tsx`)
+  - Squad info display with emoji logo
+  - Member avatars (up to 4 + overflow indicator)
+  - Average efficiency stats with icon
+  - Leader badge for top performers
+  - Hover lift animation + border glow
+- **CreateSquadModal Component** (`/features/communities/CreateSquadModal.tsx`)
+  - Squad name input with validation
+  - Emoji picker with 10 preset options
+  - Generates mock invite links
+  - Copies invite link to clipboard
+  - Form validation and error states
+- **JoinSquadModal Component** (`/features/communities/JoinSquadModal.tsx`)
+  - Invite link input with validation
+  - Link format checking
+  - Mock squad joining flow
+  - Error handling with red border
+- **Mock Squad Data** (`mockData.ts`)
+  - Squad, SquadMember interfaces
+  - Default squads with members
+  - Average efficiency calculations
+- **Communities Copy** (`copy.ts`)
+  - Header, empty state, and modal text
+  - Quick-join suggestions array
+  - Success/error toast messages
+- **Communities Route** (`/communities`)
+  - Fully functional page with all features
+  - Accessible via bottom navigation
+- **README-COMMUNITIES.md**
+  - Complete feature documentation
+  - Architecture overview
+  - Test cases and user flows
+  - Future enhancement roadmap
+
 #### Pricing & Plans (Phase 9)
 - **PricingPage Component** (`/features/pricing/PricingPage.tsx`)
   - Premium dark-themed pricing page

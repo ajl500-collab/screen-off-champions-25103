@@ -390,3 +390,49 @@ export const mockPlanData: MockPlanData = {
     },
   ],
 };
+
+export interface SquadMember {
+  name: string;
+  avatarUrl: string;
+  efficiency: number;
+}
+
+export interface Squad {
+  id: string;
+  name: string;
+  emoji: string;
+  members: SquadMember[];
+  averageEfficiency: number;
+}
+
+export interface MockSquadsData {
+  squads: Squad[];
+}
+
+export const mockSquadsData: MockSquadsData = {
+  squads: [
+    {
+      id: "1",
+      name: "Gym Bros",
+      emoji: "💪",
+      members: [
+        { name: "Andrew", avatarUrl: "🏆", efficiency: 82 },
+        { name: "Drew", avatarUrl: "🎯", efficiency: 74 },
+        { name: "Marcus", avatarUrl: "⚡", efficiency: 79 },
+      ],
+      averageEfficiency: 78,
+    },
+    {
+      id: "2",
+      name: "Study Crew",
+      emoji: "🎓",
+      members: [
+        { name: "Sarah", avatarUrl: "📚", efficiency: 91 },
+        { name: "Emma", avatarUrl: "✨", efficiency: 88 },
+        { name: "Jordan", avatarUrl: "🔥", efficiency: 85 },
+        { name: "Alex", avatarUrl: "💎", efficiency: 87 },
+      ],
+      averageEfficiency: 88,
+    },
+  ],
+};
