@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { OnboardingProvider } from "@/features/onboarding/OnboardingContext";
 import Index from "./pages/Index";
@@ -23,8 +22,6 @@ import Tips from "./pages/Tips";
 import Pricing from "./pages/Pricing";
 import BottomNav from "./components/BottomNav";
 
-const queryClient = new QueryClient();
-
 const AppLayout = ({ children }: { children: React.ReactNode }) => (
   <>
     {children}
@@ -33,8 +30,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => (
 );
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+  <TooltipProvider>
       <OnboardingProvider>
         <Toaster />
         <Sonner />
@@ -62,7 +58,6 @@ const App = () => (
         </BrowserRouter>
       </OnboardingProvider>
     </TooltipProvider>
-  </QueryClientProvider>
 );
 
 export default App;
