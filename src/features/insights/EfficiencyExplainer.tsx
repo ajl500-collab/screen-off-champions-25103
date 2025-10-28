@@ -14,12 +14,15 @@ import { computeEfficiency, getTierFromScore } from "@/lib/data/efficiency";
 import { insightsCopy, getInsightSummary } from "../dashboard/copy";
 import { useConfetti } from "@/hooks/useConfetti";
 import ConfettiExplosion from "react-confetti-explosion";
-import { subDays } from "date-fns";
+import { subDays, format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 export const EfficiencyExplainer = () => {
   // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
   const [showFormula, setShowFormula] = useState(false);
+  const [showApps, setShowApps] = useState(false);
   const [animatedValues, setAnimatedValues] = useState({
     productive: 0,
     unproductive: 0,
@@ -32,6 +35,29 @@ export const EfficiencyExplainer = () => {
   const { data: todayData, isLoading: todayLoading } = useDailyUsage(new Date());
   const { data: yesterdayData } = useDailyUsage(subDays(new Date(), 1));
   const { data: weeklyData } = useWeeklyUsage();
+  
+  // Fetch today's app breakdown
+  const { data: appsData, isLoading: appsLoading } = useQuery({
+    queryKey: ["apps-breakdown", format(new Date(), "yyyy-MM-dd")],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from("user_screen_time")
+        .select(`
+          app_name,
+          time_spent_minutes,
+          app_categories (category)
+        `)
+        .eq("user_id", user.id)
+        .eq("date", format(new Date(), "yyyy-MM-dd"))
+        .order("time_spent_minutes", { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
   // NOW we can do conditional rendering after all hooks are called
   if (todayLoading) {
@@ -349,30 +375,49 @@ export const EfficiencyExplainer = () => {
             <p className="text-sm font-medium italic">{summary}</p>
           </div>
 
-          {/* Why Toggle */}
-          <Button
-            variant="outline"
-            onClick={() => setShowFormula(!showFormula)}
-            className="w-full gap-2"
-          >
-            {showFormula ? (
-              <>
-                <ChevronUp className="w-4 h-4" />
-                Hide Formula
-              </>
-            ) : (
-              <>
-                <ChevronDown className="w-4 h-4" />
-                Why?
-              </>
-            )}
-          </Button>
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowFormula(!showFormula)}
+              className="flex-1 gap-2"
+            >
+              {showFormula ? (
+                <>
+                  <ChevronUp className="w-4 h-4" />
+                  Hide Formula
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-4 h-4" />
+                  Why?
+                </>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowApps(!showApps)}
+              className="flex-1 gap-2"
+            >
+              {showApps ? (
+                <>
+                  <ChevronUp className="w-4 h-4" />
+                  Hide Apps
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-4 h-4" />
+                  Show Apps
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Formula Card (Expandable) */}
       {showFormula && (
-        <div className="bg-muted/30 border border-border rounded-lg p-4 animate-scale-in">
+        <div className="bg-muted/30 border border-border rounded-lg p-4 mb-4 animate-scale-in">
           <h4 className="font-semibold mb-2">{insightsCopy.formula.title}</h4>
           <p className="text-sm text-muted-foreground mb-4">
             {insightsCopy.formula.explanation}
@@ -384,6 +429,60 @@ export const EfficiencyExplainer = () => {
           >
             {insightsCopy.formula.gotIt}
           </Button>
+        </div>
+      )}
+
+      {/* Apps List (Expandable) */}
+      {showApps && (
+        <div className="bg-muted/30 border border-border rounded-lg p-4 animate-scale-in">
+          <h4 className="font-semibold mb-4">Today's Apps</h4>
+          {appsLoading ? (
+            <div className="space-y-2">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          ) : !appsData || appsData.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No apps tracked today yet.</p>
+          ) : (
+            <div className="space-y-2 max-h-80 overflow-y-auto">
+              {appsData.map((app: any, index: number) => {
+                const category = app.app_categories?.category || "neutral";
+                const hours = Math.floor(app.time_spent_minutes / 60);
+                const mins = app.time_spent_minutes % 60;
+                
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-card rounded-lg border border-border hover:bg-accent/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          category === "productive"
+                            ? "bg-success"
+                            : category === "unproductive"
+                            ? "bg-destructive"
+                            : "bg-muted-foreground"
+                        }`}
+                      />
+                      <div>
+                        <p className="font-medium text-sm">{app.app_name}</p>
+                        <p className="text-xs text-muted-foreground capitalize">
+                          {category}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-mono text-sm font-semibold">
+                        {hours > 0 ? `${hours}h ` : ""}{mins}m
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </Card>
