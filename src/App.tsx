@@ -14,6 +14,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Support from "./pages/Support";
 import Blog from "./pages/Blog";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/demo" element={<Demo />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
           <Route path="/communities" element={<AppLayout><Communities /></AppLayout>} />
           <Route path="/profile" element={<AppLayout><Profile /></AppLayout>} />

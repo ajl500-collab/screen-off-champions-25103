@@ -1,4 +1,49 @@
-# Changelog - UX Refresh: Global Changes
+# Changelog - UX Refresh
+
+## Phase 2: Onboarding Flow (2025-10-28)
+
+### New Files Created
+
+- **`src/features/onboarding/OnboardingContext.tsx`**: React Context provider for onboarding state management. Persists state to localStorage including completion status, sync settings, squad details.
+
+- **`src/features/onboarding/WelcomeScreen.tsx`**: First onboarding screen explaining the core loop with animated icon cards and competitive messaging.
+
+- **`src/features/onboarding/ConnectScreen.tsx`**: Second screen for screen time sync setup. Offers both Apple Shortcuts connection (mock) and demo mode skip path.
+
+- **`src/features/onboarding/SquadSetupScreen.tsx`**: Final screen for squad creation with invite link generation, confetti celebration on completion.
+
+- **`src/pages/Onboarding.tsx`**: Main orchestrator component that manages flow between the 3 screens with skip functionality.
+
+- **`README-ONBOARDING.md`**: Complete documentation of onboarding flow, state management, customization guide, and test scenarios.
+
+### Modified Files
+
+- **`src/App.tsx`**: Added `/onboarding` route to routing configuration.
+
+- **`src/main.tsx`**: Wrapped app with `OnboardingProvider` for global state access.
+
+### Features Implemented
+
+- **3-Screen Flow**: Welcome → Connect → Squad Setup
+- **< 60 Second Completion**: Streamlined, skippable flow
+- **Mock Integrations**: All features work without backend (Apple Shortcuts mock, invite links)
+- **State Persistence**: localStorage-backed state survives page refreshes
+- **Confetti Celebration**: Visual feedback on onboarding completion
+- **Skip Paths**: "Skip intro" button + demo mode option
+- **Mobile-First Design**: Fully responsive with smooth transitions
+- **Accessibility**: Reduced-motion support, keyboard navigation
+
+### User Journey
+
+1. New user lands on app → redirected to `/onboarding`
+2. Welcome screen explains loop → proceeds to Connect
+3. Connect screen offers sync or demo mode → proceeds to Squad
+4. Squad screen creates competitive context → confetti → dashboard redirect
+5. State marked as `onboardingComplete = true` → future visits skip to dashboard
+
+---
+
+## Phase 1: Global Changes (2025-10-28)
 
 ## Files Changed
 
