@@ -247,6 +247,36 @@ export type Database = {
           },
         ]
       }
+      motivation_history: {
+        Row: {
+          content: string
+          created_at: string
+          efficiency_score: number | null
+          id: string
+          streak_days: number | null
+          trigger_reason: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          efficiency_score?: number | null
+          id?: string
+          streak_days?: number | null
+          trigger_reason?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          efficiency_score?: number | null
+          id?: string
+          streak_days?: number | null
+          trigger_reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_emoji: string | null
@@ -283,6 +313,36 @@ export type Database = {
         }
         Relationships: []
       }
+      roast_history: {
+        Row: {
+          content: string
+          created_at: string
+          efficiency_score: number | null
+          id: string
+          rank_delta: number | null
+          trigger_reason: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          efficiency_score?: number | null
+          id?: string
+          rank_delta?: number | null
+          trigger_reason?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          efficiency_score?: number | null
+          id?: string
+          rank_delta?: number | null
+          trigger_reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           bio: string | null
@@ -315,6 +375,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      squad_insights: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          squad_id: string
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          squad_id: string
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          squad_id?: string
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "squad_insights_squad_id_fkey"
+            columns: ["squad_id"]
+            isOneToOne: false
+            referencedRelation: "squads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       squads: {
         Row: {
@@ -484,6 +579,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      weekly_summary: {
+        Row: {
+          created_at: string
+          efficiency_change: number | null
+          id: string
+          summary: string
+          top_productive_app: string | null
+          top_unproductive_app: string | null
+          user_id: string
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          efficiency_change?: number | null
+          id?: string
+          summary: string
+          top_productive_app?: string | null
+          top_unproductive_app?: string | null
+          user_id: string
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          efficiency_change?: number | null
+          id?: string
+          summary?: string
+          top_productive_app?: string | null
+          top_unproductive_app?: string | null
+          user_id?: string
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: []
       }
       weekly_themes: {
         Row: {

@@ -11,6 +11,8 @@ import { PowerTipsCarousel } from "../tips/PowerTipsCarousel";
 import { CoreLoopStrip } from "@/components/CoreLoopStrip";
 import { Badge } from "@/components/ui/badge";
 import { ManualTimeEntry } from "@/components/ManualTimeEntry";
+import { LatestAIMessage } from "@/components/LatestAIMessage";
+import { WeeklySummaryBanner } from "@/components/WeeklySummaryBanner";
 import { format, subDays } from "date-fns";
 
 export const Dashboard = () => {
@@ -98,6 +100,9 @@ export const Dashboard = () => {
         {/* Core Loop Strip */}
         <CoreLoopStrip className="mb-6" />
 
+        {/* Weekly Summary Banner */}
+        <WeeklySummaryBanner />
+
         {/* Section 1: Today At A Glance */}
         <section>
           <h2 className="text-lg font-semibold mb-3 text-foreground">
@@ -109,6 +114,11 @@ export const Dashboard = () => {
             neutralMins={todaySummary?.neutral || 0}
             deltaVsYesterday={Math.round(deltaVsYesterday)}
           />
+        </section>
+
+        {/* AI Message Section */}
+        <section>
+          <LatestAIMessage />
         </section>
 
         {/* Section 2: Weekly Progress */}

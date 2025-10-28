@@ -14,3 +14,15 @@ verify_jwt = false
 
 [functions.screentime-ingest]
 verify_jwt = false
+
+[functions.generate-roast]
+verify_jwt = true
+
+[functions.generate-motivation]
+verify_jwt = true
+
+[functions.generate-weekly-summary]
+verify_jwt = true
+
+[functions.generate-squad-insights]
+verify_jwt = true

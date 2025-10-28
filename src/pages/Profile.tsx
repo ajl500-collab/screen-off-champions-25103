@@ -3,6 +3,7 @@ import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import { PlayerCard } from "@/features/profile/PlayerCard";
+import { AIMessageHistory } from "@/components/AIMessageHistory";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
@@ -48,8 +49,9 @@ const Profile = () => {
       </div>
 
       {/* Player Card Content */}
-      <div className="px-4 pt-6 max-w-2xl mx-auto">
+      <div className="px-4 pt-6 max-w-2xl mx-auto space-y-6">
         <PlayerCard />
+        <AIMessageHistory />
       </div>
     </div>
   );
