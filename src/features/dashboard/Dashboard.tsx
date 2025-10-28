@@ -7,6 +7,7 @@ import { WeeklyProgress } from "./WeeklyProgress";
 import { EfficiencyMeter } from "./EfficiencyMeter";
 import { EfficiencyExplainer } from "../insights/EfficiencyExplainer";
 import { PowerTipsCarousel } from "../tips/PowerTipsCarousel";
+import { CoreLoopStrip } from "@/components/CoreLoopStrip";
 import { Badge } from "@/components/ui/badge";
 
 export const Dashboard = () => {
@@ -38,6 +39,9 @@ export const Dashboard = () => {
 
       {/* Main Content */}
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+        {/* Core Loop Strip */}
+        <CoreLoopStrip className="mb-6" />
+
         {/* Section 1: Today At A Glance */}
         <section>
           <h2 className="text-lg font-semibold mb-3 text-foreground">
