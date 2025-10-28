@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Trophy, Users, Plus, Code, MessageCircle, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Leaderboard from "@/components/Leaderboard";
+import { Leaderboard } from "@/features/leaderboard/Leaderboard";
 import Header from "@/components/Header";
 import ChatInterface from "@/components/ChatInterface";
 import { supabase } from "@/integrations/supabase/client";
@@ -224,15 +224,9 @@ const Communities = () => {
                 </div>
 
                 {/* Leaderboard */}
-            <div className="bg-card border border-border rounded-2xl overflow-hidden mb-6">
-              <div className="p-4 border-b border-border bg-muted/30">
-                <h3 className="font-bold flex items-center gap-2">
-                  <Trophy className="w-5 h-5 text-primary" />
-                  Live Leaderboard
-                </h3>
-              </div>
-              <Leaderboard />
-            </div>
+                <div className="mb-6">
+                  <Leaderboard />
+                </div>
 
             {/* Online Members Card */}
             <div className="bg-card border border-border rounded-2xl p-6 mb-6">

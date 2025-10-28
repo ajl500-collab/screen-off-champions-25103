@@ -1,5 +1,76 @@
 # Changelog - UX Refresh
 
+## Phase 4: Leaderboard Redesign - Motion + Status + Weekly Rhythm (2025-10-28)
+
+### New Files Created
+
+- **`src/features/leaderboard/Leaderboard.tsx`**: Main leaderboard component with header, filters (Squad/Global/Friends), weekly reset countdown, and animated list.
+
+- **`src/features/leaderboard/LeaderboardItem.tsx`**: Individual rank row with avatar, name, efficiency badge, rank delta, badges, and hover animations.
+
+- **`src/features/leaderboard/Badges.tsx`**: Badge chip component with tooltips showing badge name and description.
+
+- **`src/features/leaderboard/RankDeltaIndicator.tsx`**: Rank change indicator with color-coded arrows (green up, red down, gray neutral) and motivational tooltips.
+
+- **`README-LEADERBOARD.md`**: Complete documentation of leaderboard architecture, animations, badge system, and testing scenarios.
+
+### Modified Files
+
+- **`src/features/dashboard/mockData.ts`**: Added leaderboard mock data structure with 8 users, including rank, efficiency, tier, badges, and rank deltas.
+
+- **`src/features/dashboard/copy.ts`**: Added leaderboard-specific copy including rank change messages, top rank copy, empty state text, and badge descriptions.
+
+- **`CHANGELOG.md`**: Added Phase 4 documentation.
+
+### Features Implemented
+
+- **Animated Rank Deltas**: Green/red arrows show rank changes with smooth slide-up animation
+- **Tier System**: Gold (≥80%), Silver (60-79%), Bronze (<60%) with color-coded badges
+- **Badge System**: 4 achievement badges (Most Improved, Streak King, Ice Cold, Clutch Comeback) with tooltips
+- **Filter Tabs**: Squad / Global / Friends selection (UI only, mock data)
+- **Weekly Reset Timer**: Countdown showing time until leaderboard resets
+- **Top 3 Highlighting**: Gradient backgrounds for top 3 ranks with trophy icons
+- **Current User Highlight**: Primary border and background for user's row
+- **Empty State**: Invite friends CTA with clipboard copy functionality
+- **Hover Effects**: Scale (1.02x) with shadow lift on row hover
+- **Staggered Animations**: 50ms delay per row on mount
+- **Tooltips**: Contextual information on badges and rank deltas
+
+### Copy Tone Examples
+
+| Context     | Example                                      |
+| ----------- | -------------------------------------------- |
+| Rank Up     | "🔥 Up 2 ranks! You're built different."     |
+| Rank Down   | "👀 Someone's been scrolling again."         |
+| Top 1       | "🥇 You're the GOAT this week."              |
+
+### Visual Design
+
+- **Tier Colors**: Gold (yellow), Silver (gray), Bronze (orange)
+- **Top 3 Gradient**: Fades from tier color to transparent background
+- **Current User**: Primary border with background tint
+- **Animations**: Scale on hover, slide-up deltas, pulse clock icon
+- **Spacing**: Consistent with dashboard design system
+
+### State Management
+
+- Mock data only (no backend integration yet)
+- Filter state managed locally (squad/global/friends)
+- Current user detection via userId comparison
+- Timer updates every 60 seconds (mock countdown)
+
+### User Journey
+
+1. User navigates to Communities page
+2. Leaderboard renders with animated entry
+3. User sees their rank highlighted with primary border
+4. Hover on rank delta shows motivational tooltip
+5. Hover on badge shows achievement description
+6. Filter tabs switch between Squad/Global/Friends views
+7. Empty state appears if no users in squad
+
+---
+
 ## Phase 3: Dashboard Redesign - Emotion + Progression (2025-10-28)
 
 ### New Files Created
