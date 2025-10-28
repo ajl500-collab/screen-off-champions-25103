@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.recategorize-existing-apps]
 verify_jwt = false
+
+[functions.screentime-ingest]
+verify_jwt = false
