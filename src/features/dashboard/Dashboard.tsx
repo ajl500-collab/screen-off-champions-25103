@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOnboarding } from "../onboarding/OnboardingContext";
-import { mockDashboardData } from "./mockData";
+import { useDailyUsage, useWeeklyUsage, useStreak } from "@/lib/data/queries";
+import { calculateDailySummary, calculateWeeklySummary } from "@/lib/data/efficiency";
 import { TodayAtAGlance } from "./TodayAtAGlance";
 import { WeeklyProgress } from "./WeeklyProgress";
 import { EfficiencyMeter } from "./EfficiencyMeter";
@@ -9,19 +10,70 @@ import { EfficiencyExplainer } from "../insights/EfficiencyExplainer";
 import { PowerTipsCarousel } from "../tips/PowerTipsCarousel";
 import { CoreLoopStrip } from "@/components/CoreLoopStrip";
 import { Badge } from "@/components/ui/badge";
+import { format, subDays } from "date-fns";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
   const { onboardingComplete, demoMode } = useOnboarding();
 
+  const today = useDailyUsage();
+  const yesterday = useDailyUsage(subDays(new Date(), 1));
+  const weeklyData = useWeeklyUsage();
+  const streak = useStreak();
+
   useEffect(() => {
-    // Redirect to onboarding if not complete
     if (!onboardingComplete && !demoMode) {
       navigate("/onboarding");
     }
   }, [onboardingComplete, demoMode, navigate]);
 
-  const { today, yesterday, efficiency, weekly } = mockDashboardData;
+  // Calculate today's summary
+  const todaySummary = today.data
+    ? calculateDailySummary(
+        today.data.productive_mins,
+        today.data.unproductive_mins,
+        today.data.neutral_mins,
+        today.data.usage_date
+      )
+    : null;
+
+  // Calculate yesterday's summary for delta
+  const yesterdaySummary = yesterday.data
+    ? calculateDailySummary(
+        yesterday.data.productive_mins,
+        yesterday.data.unproductive_mins,
+        yesterday.data.neutral_mins,
+        yesterday.data.usage_date
+      )
+    : null;
+
+  const deltaVsYesterday = todaySummary && yesterdaySummary
+    ? ((todaySummary.unproductive - yesterdaySummary.unproductive) / 
+       Math.max(yesterdaySummary.unproductive, 1)) * 100
+    : 0;
+
+  // Convert weekly data to chart format
+  const weeklyChartData = weeklyData.data?.map((day) => {
+    const summary = calculateDailySummary(
+      day.productive_mins,
+      day.unproductive_mins,
+      day.neutral_mins,
+      day.usage_date
+    );
+    return {
+      day: format(new Date(day.usage_date), "EEE"),
+      productive: day.productive_mins,
+      unproductive: day.unproductive_mins,
+      neutral: day.neutral_mins,
+      total: summary.total,
+    };
+  }) || [];
+
+  if (today.isLoading || weeklyData.isLoading) {
+    return <div className="min-h-screen bg-background pb-24 flex items-center justify-center">
+      <p className="text-muted-foreground">Loading dashboard...</p>
+    </div>;
+  }
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -48,10 +100,10 @@ export const Dashboard = () => {
             Today At A Glance
           </h2>
           <TodayAtAGlance
-            productiveMins={today.productiveMins}
-            unproductiveMins={today.unproductiveMins}
-            neutralMins={today.neutralMins}
-            deltaVsYesterday={efficiency.deltaVsYesterday}
+            productiveMins={todaySummary?.productive || 0}
+            unproductiveMins={todaySummary?.unproductive || 0}
+            neutralMins={todaySummary?.neutral || 0}
+            deltaVsYesterday={Math.round(deltaVsYesterday)}
           />
         </section>
 
@@ -61,8 +113,8 @@ export const Dashboard = () => {
             Weekly Progress
           </h2>
           <WeeklyProgress
-            weeklyData={weekly}
-            streakDays={efficiency.streakDays}
+            weeklyData={weeklyChartData}
+            streakDays={streak.data || 0}
           />
         </section>
 
@@ -72,10 +124,10 @@ export const Dashboard = () => {
             Efficiency Meter
           </h2>
           <EfficiencyMeter
-            efficiency={efficiency.value}
-            tier={efficiency.tier}
-            streakDays={efficiency.streakDays}
-            deltaVsYesterday={efficiency.deltaVsYesterday}
+            efficiency={todaySummary?.efficiency.score || 0}
+            tier={todaySummary?.efficiency.tier || "Bronze"}
+            streakDays={streak.data || 0}
+            deltaVsYesterday={Math.round(deltaVsYesterday)}
           />
         </section>
 

@@ -11,52 +11,44 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { trackAppUsage } from "@/hooks/useScreenTimeTracking";
-import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { upsertDailyUsage } from "@/lib/data/mutations";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const ManualTimeEntry = () => {
   const [open, setOpen] = useState(false);
-  const [appName, setAppName] = useState("");
-  const [minutes, setMinutes] = useState("");
+  const [productive, setProductive] = useState("");
+  const [unproductive, setUnproductive] = useState("");
+  const [neutral, setNeutral] = useState("");
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!appName || !minutes || parseInt(minutes) <= 0) {
-      toast({
-        title: "Invalid Input",
-        description: "Please enter a valid app name and time in minutes",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      await trackAppUsage(user.id, appName, parseInt(minutes));
-
-      toast({
-        title: "Success",
-        description: `Added ${minutes} minutes for ${appName}`
+      await upsertDailyUsage({
+        usage_date: format(new Date(), "yyyy-MM-dd"),
+        productive_mins: parseInt(productive) || 0,
+        unproductive_mins: parseInt(unproductive) || 0,
+        neutral_mins: parseInt(neutral) || 0,
+        source: "manual",
       });
 
-      setAppName("");
-      setMinutes("");
+      await queryClient.invalidateQueries({ queryKey: ["daily-usage"] });
+      await queryClient.invalidateQueries({ queryKey: ["weekly-usage"] });
+      await queryClient.invalidateQueries({ queryKey: ["streak"] });
+
+      toast.success("Today's screen time saved!");
+      setProductive("");
+      setUnproductive("");
+      setNeutral("");
       setOpen(false);
     } catch (error) {
-      console.error("Error tracking app usage:", error);
-      toast({
-        title: "Error",
-        description: "Failed to track app usage",
-        variant: "destructive"
-      });
+      toast.error("Failed to save screen time");
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -67,39 +59,52 @@ export const ManualTimeEntry = () => {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <Plus className="w-4 h-4" />
-          Add App Time
+          Add Today's Time
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Track App Usage</DialogTitle>
+          <DialogTitle>Track Today's Screen Time</DialogTitle>
           <DialogDescription>
-            Manually add time spent on an app today
+            Enter your daily totals in minutes
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="appName">App Name</Label>
+            <Label htmlFor="productive">Productive (minutes)</Label>
             <Input
-              id="appName"
-              value={appName}
-              onChange={(e) => setAppName(e.target.value)}
-              placeholder="e.g., Instagram, LinkedIn"
+              id="productive"
+              type="number"
+              min="0"
+              value={productive}
+              onChange={(e) => setProductive(e.target.value)}
+              placeholder="e.g., 120"
             />
           </div>
           <div>
-            <Label htmlFor="minutes">Time (minutes)</Label>
+            <Label htmlFor="unproductive">Unproductive (minutes)</Label>
             <Input
-              id="minutes"
+              id="unproductive"
               type="number"
-              value={minutes}
-              onChange={(e) => setMinutes(e.target.value)}
-              placeholder="30"
-              min="1"
+              min="0"
+              value={unproductive}
+              onChange={(e) => setUnproductive(e.target.value)}
+              placeholder="e.g., 90"
+            />
+          </div>
+          <div>
+            <Label htmlFor="neutral">Neutral (minutes)</Label>
+            <Input
+              id="neutral"
+              type="number"
+              min="0"
+              value={neutral}
+              onChange={(e) => setNeutral(e.target.value)}
+              placeholder="e.g., 30"
             />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Adding..." : "Add Time"}
+            {loading ? "Saving..." : "Save Today's Time"}
           </Button>
         </form>
       </DialogContent>

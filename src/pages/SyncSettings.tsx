@@ -1,6 +1,8 @@
 import Header from "@/components/Header";
 import { SyncStatus } from "@/features/settings/SyncStatus";
+import { SyncWebhook } from "@/features/settings/SyncWebhook";
 import { ConnectedServices } from "@/features/settings/ConnectedServices";
+import { CsvImport } from "@/features/ingest/CsvImport";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -33,7 +35,9 @@ const SyncSettings = () => {
       {/* Content */}
       <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
         <SyncStatus />
+        <SyncWebhook />
         <ConnectedServices />
+        <CsvImport />
       </div>
     </div>
   );

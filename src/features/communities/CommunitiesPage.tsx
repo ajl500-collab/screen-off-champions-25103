@@ -1,102 +1,70 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { SquadCard } from "./SquadCard";
 import { CreateSquadModal } from "./CreateSquadModal";
 import { JoinSquadModal } from "./JoinSquadModal";
-import { mockSquadsData, Squad } from "@/features/dashboard/mockData";
-import { useToast } from "@/hooks/use-toast";
+import { SquadCard } from "./SquadCard";
+import { useSquads } from "@/lib/data/queries";
+import { createSquad as createSquadMutation, joinSquad as joinSquadMutation } from "@/lib/data/mutations";
+import { useQueryClient } from "@tanstack/react-query";
 import { useConfetti } from "@/hooks/useConfetti";
+import { toast } from "sonner";
 import { COPY } from "@/lib/copy";
 import { Plus, Link } from "lucide-react";
 
 export const CommunitiesPage = () => {
-  const { toast } = useToast();
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
   const { celebrate } = useConfetti();
-  const [squads, setSquads] = useState<Squad[]>(() => {
-    const saved = localStorage.getItem("screenVsSquads");
-    return saved ? JSON.parse(saved) : mockSquadsData.squads;
-  });
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { data: squads = [], isLoading } = useSquads();
 
-  const handleCreateSquad = (name: string, emoji: string) => {
-    const newSquad: Squad = {
-      id: `squad-${Date.now()}`,
-      name,
-      emoji,
-      members: [
-        { name: "You", avatarUrl: "🏆", efficiency: 76 }
-      ],
-      averageEfficiency: 76,
-    };
+  const handleCreateSquad = async (name: string, emoji: string) => {
+    try {
+      const squad = await createSquadMutation(name, emoji);
+      await queryClient.invalidateQueries({ queryKey: ["squads"] });
 
-    const updatedSquads = [...squads, newSquad];
-    setSquads(updatedSquads);
-    localStorage.setItem("screenVsSquads", JSON.stringify(updatedSquads));
-    
-    celebrate();
-    toast({
-      title: COPY.communities.createSuccess.title,
-      description: COPY.communities.createSuccess.description,
-    });
-    
-    // Mock copy invite link
-    navigator.clipboard.writeText(`https://screenvs.app/join/${newSquad.id}`).catch(() => {});
+      const inviteLink = `https://screenvs.app/join/${squad.invite_code}`;
+      navigator.clipboard.writeText(inviteLink);
+      
+      celebrate();
+      toast.success(COPY.communities.toasts.created);
+      setShowCreateModal(false);
+    } catch (error) {
+      toast.error("Failed to create squad");
+      console.error(error);
+    }
   };
 
-  const handleJoinSquad = (inviteLink: string) => {
-    // Extract squad ID from link
-    const match = inviteLink.match(/\/join\/(.+)$/);
-    if (!match) {
+  const handleJoinSquad = async (inviteLink: string): Promise<boolean> => {
+    if (!inviteLink.includes("/join/")) {
+      toast.error(COPY.communities.toasts.invalidLink);
       return false;
     }
 
-    // Mock squad data based on invite
-    const mockNewSquad: Squad = {
-      id: match[1],
-      name: "New Squad",
-      emoji: "🎯",
-      members: [
-        { name: "You", avatarUrl: "🏆", efficiency: 76 },
-        { name: "Sarah", avatarUrl: "⚡", efficiency: 82 },
-      ],
-      averageEfficiency: 79,
-    };
+    try {
+      const inviteCode = inviteLink.split("/join/")[1];
+      await joinSquadMutation(inviteCode);
+      await queryClient.invalidateQueries({ queryKey: ["squads"] });
 
-    const updatedSquads = [...squads, mockNewSquad];
-    setSquads(updatedSquads);
-    localStorage.setItem("screenVsSquads", JSON.stringify(updatedSquads));
-
-    celebrate();
-    toast({
-      title: COPY.communities.joinSuccess.title,
-      description: COPY.communities.joinSuccess.description,
-    });
-
-    return true;
+      celebrate();
+      toast.success(COPY.communities.toasts.joined);
+      setShowJoinModal(false);
+      return true;
+    } catch (error: any) {
+      if (error.message.includes("Already a member")) {
+        toast.error("You're already in this squad");
+      } else if (error.message.includes("Invalid invite code")) {
+        toast.error(COPY.communities.toasts.invalidLink);
+      } else {
+        toast.error("Failed to join squad");
+      }
+      console.error(error);
+      return false;
+    }
   };
 
-  const handleQuickJoin = (name: string, emoji: string) => {
-    const newSquad: Squad = {
-      id: `squad-${Date.now()}`,
-      name,
-      emoji,
-      members: [
-        { name: "You", avatarUrl: "🏆", efficiency: 76 },
-        { name: "Alex", avatarUrl: "🎯", efficiency: 73 },
-      ],
-      averageEfficiency: 74,
-    };
-
-    const updatedSquads = [...squads, newSquad];
-    setSquads(updatedSquads);
-    localStorage.setItem("screenVsSquads", JSON.stringify(updatedSquads));
-
-    celebrate();
-    toast({
-      title: COPY.communities.quickJoinSuccess.title,
-      description: COPY.communities.quickJoinSuccess.description(name),
-    });
+  const handleQuickJoin = async (name: string, emoji: string) => {
+    await handleCreateSquad(name, emoji);
   };
 
   return (
@@ -116,7 +84,7 @@ export const CommunitiesPage = () => {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => setIsJoinModalOpen(true)}
+              onClick={() => setShowJoinModal(true)}
               className="gap-2"
             >
               <Link className="w-4 h-4" />
@@ -124,7 +92,7 @@ export const CommunitiesPage = () => {
             </Button>
             <Button
               size="sm"
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={() => setShowCreateModal(true)}
               className="gap-2"
             >
               <Plus className="w-4 h-4" />
@@ -135,8 +103,12 @@ export const CommunitiesPage = () => {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        {squads.length === 0 ? (
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading squads...</p>
+          </div>
+        ) : squads.length === 0 ? (
           /* Empty State */
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🏝️</div>
@@ -182,13 +154,13 @@ export const CommunitiesPage = () => {
 
       {/* Modals */}
       <CreateSquadModal
-        open={isCreateModalOpen}
-        onOpenChange={setIsCreateModalOpen}
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
         onCreateSquad={handleCreateSquad}
       />
       <JoinSquadModal
-        open={isJoinModalOpen}
-        onOpenChange={setIsJoinModalOpen}
+        open={showJoinModal}
+        onOpenChange={setShowJoinModal}
         onJoinSquad={handleJoinSquad}
       />
     </div>
