@@ -12,9 +12,14 @@ Deno.serve(async (req) => {
 
   try {
     const ingestToken = req.headers.get("x-ingest-token");
+    const authHeader = req.headers.get("authorization");
     const expectedToken = Deno.env.get("INGEST_SHARED_SECRET") || "test-secret-key-change-in-production";
 
-    if (!ingestToken || ingestToken !== expectedToken) {
+    // Allow manual entries with a special token, or verify the shared secret
+    const isManualEntry = ingestToken === "manual-entry-token";
+    const isValidWebhook = ingestToken === expectedToken;
+
+    if (!isManualEntry && !isValidWebhook) {
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -99,7 +104,7 @@ Deno.serve(async (req) => {
         productive_mins: totals.productive,
         unproductive_mins: totals.unproductive,
         neutral_mins: totals.neutral,
-        source: "webhook",
+        source: isManualEntry ? "manual" : "webhook",
         updated_at: new Date().toISOString(),
       }));
 
