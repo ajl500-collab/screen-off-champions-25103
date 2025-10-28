@@ -23,11 +23,16 @@ export const CommunitiesPage = () => {
       const squad = await createSquadMutation(name, emoji);
       await queryClient.invalidateQueries({ queryKey: ["squads"] });
 
-      const inviteLink = `https://screenvs.app/join/${squad.invite_code}`;
-      navigator.clipboard.writeText(inviteLink);
-      
+      // Copy invite CODE (not external links)
+      const inviteCode = squad.invite_code;
+      if (inviteCode) {
+        await navigator.clipboard.writeText(inviteCode);
+        toast.success(`Squad created! Invite code copied: ${inviteCode}`);
+      } else {
+        toast.success(COPY.communities.toasts.created);
+      }
+
       celebrate();
-      toast.success(COPY.communities.toasts.created);
       setShowCreateModal(false);
     } catch (error) {
       toast.error("Failed to create squad");
@@ -35,26 +40,20 @@ export const CommunitiesPage = () => {
     }
   };
 
-  const handleJoinSquad = async (inviteLink: string): Promise<boolean> => {
-    if (!inviteLink.includes("/join/")) {
-      toast.error(COPY.communities.toasts.invalidLink);
-      return false;
-    }
-
+  const handleJoinSquad = async (inviteCode: string): Promise<boolean> => {
     try {
-      const inviteCode = inviteLink.split("/join/")[1];
       await joinSquadMutation(inviteCode);
       await queryClient.invalidateQueries({ queryKey: ["squads"] });
 
       celebrate();
-      toast.success(COPY.communities.toasts.joined);
+      toast.success("Successfully joined squad!");
       setShowJoinModal(false);
       return true;
     } catch (error: any) {
       if (error.message.includes("Already a member")) {
         toast.error("You're already in this squad");
       } else if (error.message.includes("Invalid invite code")) {
-        toast.error(COPY.communities.toasts.invalidLink);
+        toast.error("Invalid invite code - please check and try again");
       } else {
         toast.error("Failed to join squad");
       }

@@ -14,7 +14,7 @@ import { COPY } from "@/lib/copy";
 interface JoinSquadModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onJoinSquad: (inviteLink: string) => Promise<boolean>;
+  onJoinSquad: (inviteCode: string) => Promise<boolean>;
 }
 
 export const JoinSquadModal = ({
@@ -22,31 +22,32 @@ export const JoinSquadModal = ({
   onOpenChange,
   onJoinSquad,
 }: JoinSquadModalProps) => {
-  const [inviteLink, setInviteLink] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!inviteLink.trim()) {
-      setError("Invite link is required");
+    if (!inviteCode.trim()) {
+      setError("Invite code is required");
       return;
     }
 
-    if (!inviteLink.includes("/join/")) {
-      setError("Invalid link — double-check and try again.");
-      return;
+    // Extract code from link if they paste a full link
+    let codeToUse = inviteCode.trim();
+    if (codeToUse.includes("/join/")) {
+      codeToUse = codeToUse.split("/join/")[1];
     }
 
-    const success = await onJoinSquad(inviteLink.trim());
+    const success = await onJoinSquad(codeToUse);
     
     if (success) {
       // Reset and close
-      setInviteLink("");
+      setInviteCode("");
       setError("");
       onOpenChange(false);
     } else {
-      setError("Invalid link — double-check and try again.");
+      setError("Invalid invite code — double-check and try again.");
     }
   };
 
@@ -61,17 +62,17 @@ export const JoinSquadModal = ({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Invite Link Input */}
+          {/* Invite Code Input */}
           <div className="space-y-2">
-            <Label htmlFor="inviteLink">
-              {COPY.communities.joinModal.linkLabel}
+            <Label htmlFor="inviteCode">
+              Invite Code or Link
             </Label>
             <Input
-              id="inviteLink"
-              placeholder="https://screenvs.app/join/squad-XYZ"
-              value={inviteLink}
+              id="inviteCode"
+              placeholder="e.g. ABC123XYZ or paste full link"
+              value={inviteCode}
               onChange={(e) => {
-                setInviteLink(e.target.value);
+                setInviteCode(e.target.value);
                 setError("");
               }}
               className={error ? "border-destructive" : ""}
@@ -83,7 +84,7 @@ export const JoinSquadModal = ({
 
           {/* Submit Button */}
           <Button type="submit" className="w-full">
-            {COPY.communities.joinModal.submitButton}
+            Join Squad
           </Button>
         </form>
       </DialogContent>
