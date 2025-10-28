@@ -18,6 +18,7 @@ import { subDays } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const EfficiencyExplainer = () => {
+  // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
   const [showFormula, setShowFormula] = useState(false);
   const [animatedValues, setAnimatedValues] = useState({
     productive: 0,
@@ -32,6 +33,7 @@ export const EfficiencyExplainer = () => {
   const { data: yesterdayData } = useDailyUsage(subDays(new Date(), 1));
   const { data: weeklyData } = useWeeklyUsage();
 
+  // NOW we can do conditional rendering after all hooks are called
   if (todayLoading) {
     return (
       <Card className="p-6">
