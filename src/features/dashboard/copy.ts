@@ -268,6 +268,30 @@ export const profileCopy: ProfileCopy = {
   emptyMemes: "No roasts yet — stay humble 😉.",
 };
 
+interface MemesCopy {
+  title: string;
+  addSuccess: string;
+  deleteSuccess: string;
+  copySuccess: string;
+  sendSuccess: string;
+  invalidUrl: string;
+  communityToggleTooltip: string;
+  emptyUserMemes: string;
+  roastGenerated: string;
+}
+
+export const memesCopy: MemesCopy = {
+  title: "Meme Bank 🖼️",
+  addSuccess: "Added to your bank 🔥",
+  deleteSuccess: "Deleted.",
+  copySuccess: "Roast copied to clipboard 📋",
+  sendSuccess: "Roast sent (safely) 😂",
+  invalidUrl: "Invalid URL. Use https:// with .jpg, .png, or .webp",
+  communityToggleTooltip: "These memes are moderated for good vibes only.",
+  emptyUserMemes: "No memes yet. Add your first one!",
+  roastGenerated: "Roast generated 🔥",
+};
+
 export const getInsightSummary = (
   productiveDelta: number,
   unproductiveDelta: number,

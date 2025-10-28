@@ -309,3 +309,45 @@ export const mockProfileData: MockProfileData = {
   ],
   bio: "Known for: last-minute comebacks",
 };
+
+export interface MemeItem {
+  id: number;
+  url: string;
+  title: string;
+  isCommunity?: boolean;
+}
+
+export interface RoastTemplate {
+  id: number;
+  template: string;
+}
+
+export interface MockMemesData {
+  userMemes: MemeItem[];
+  communityMemes: MemeItem[];
+  roastTemplates: RoastTemplate[];
+}
+
+export const mockMemesData: MockMemesData = {
+  userMemes: [
+    { id: 1, url: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=400", title: "Focus Mode" },
+    { id: 2, url: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=400", title: "Infinite Scroll" },
+    { id: 3, url: "https://images.unsplash.com/photo-1588421357574-87938a86fa28?w=400", title: "Notification Hell" },
+  ],
+  communityMemes: [
+    { id: 101, url: "https://images.unsplash.com/photo-1596496181848-3091d4878b24?w=400", title: "Work Focus", isCommunity: true },
+    { id: 102, url: "https://images.unsplash.com/photo-1515378960530-7c0da6231fb1?w=400", title: "Phone Addict", isCommunity: true },
+    { id: 103, url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400", title: "Squad Goals", isCommunity: true },
+  ],
+  roastTemplates: [
+    { id: 1, template: "📱 {name}, your thumb's training for a marathon." },
+    { id: 2, template: "🔥 {name}, you just hit a new PR in screen time." },
+    { id: 3, template: "💀 {name}, your battery died before you did today." },
+    { id: 4, template: "{name}, your screen time's up +{delta}%. Embarrassing." },
+    { id: 5, template: "{name}, Bronze tier again? You scroll like it's your job." },
+    { id: 6, template: "{name}, {hours} hours on TikTok. Seek help." },
+    { id: 7, template: "Calm down, influencer. - Sent to {name}" },
+    { id: 8, template: "You could build a startup with those hours, {name}." },
+    { id: 9, template: "Roasted with love 🔥 — back on track tomorrow, {name}." },
+  ],
+};

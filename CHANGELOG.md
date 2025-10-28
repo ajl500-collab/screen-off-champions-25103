@@ -5,6 +5,17 @@ All notable changes to ScreenVS will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Meme Bank and Roast Engine feature with safe humor system
+- MemeBank.tsx component with user/community meme tabs
+- MemeUploadForm.tsx for adding new memes with URL validation
+- RoastEngine.tsx for generating personalized roasts
+- 9 safe roast templates with dynamic placeholders
+- Community meme pool with opt-in toggle
+- Image error handling with fallback UI
+- Copy and mock send functionality for roasts
+- Memes page at /memes route with tabbed interface
+
+### Added
 - Player Card Profile feature with tier-based visual identity
 - PlayerCard.tsx component with avatar, tier badge, and editable bio
 - PlayerStatsGrid.tsx with animated count-up stats display
