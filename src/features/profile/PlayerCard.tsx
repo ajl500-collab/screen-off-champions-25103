@@ -61,6 +61,14 @@ export const PlayerCard = () => {
     }
   }, [settings]);
 
+  // Celebration effect - must be before early returns
+  useEffect(() => {
+    if (profile && profile.efficiency_score >= 80) {
+      const timer = setTimeout(() => celebrate(), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [celebrate, profile]);
+
   const handleBioBlur = async () => {
     await updateSettings({ bio });
     setIsEditingBio(false);
@@ -92,13 +100,6 @@ export const PlayerCard = () => {
       description: "Player card sharing will be available soon.",
     });
   };
-
-  useEffect(() => {
-    if (efficiency >= 80) {
-      const timer = setTimeout(() => celebrate(), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [celebrate, efficiency]);
 
   return (
     <div className="space-y-6 pb-6">
