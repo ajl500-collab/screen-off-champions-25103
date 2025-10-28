@@ -173,3 +173,67 @@ export const mockLeaderboardData: MockLeaderboardData = {
   weekEndsIn: "3d 14h",
   currentUserId: "current-user",
 };
+
+export interface PowerTip {
+  id: number;
+  title: string;
+  oneLiner: string;
+  tried: boolean;
+  actionLabel: string;
+  actionType: "link" | "toast" | "tooltip";
+  actionData?: string;
+}
+
+export interface MockPowerTipsData {
+  tips: PowerTip[];
+}
+
+export const mockPowerTipsData: MockPowerTipsData = {
+  tips: [
+    {
+      id: 1,
+      title: "Grayscale Mode",
+      oneLiner: "Make your screen less addictive.",
+      tried: false,
+      actionLabel: "Enable",
+      actionType: "link",
+      actionData: "https://support.apple.com/en-us/HT208180",
+    },
+    {
+      id: 2,
+      title: "Notification Triage",
+      oneLiner: "Silence low-priority apps.",
+      tried: false,
+      actionLabel: "Learn How",
+      actionType: "link",
+      actionData: "https://support.apple.com/en-us/HT201925",
+    },
+    {
+      id: 3,
+      title: "Lock Screen Widgets Off",
+      oneLiner: "Remove dopamine traps.",
+      tried: false,
+      actionLabel: "Learn How",
+      actionType: "tooltip",
+      actionData: "Settings → Face ID & Passcode → Allow Access When Locked → Turn off all widgets",
+    },
+    {
+      id: 4,
+      title: "App Limits",
+      oneLiner: "Timebox your biggest distractions.",
+      tried: false,
+      actionLabel: "Learn How",
+      actionType: "link",
+      actionData: "https://support.apple.com/en-us/HT208982",
+    },
+    {
+      id: 5,
+      title: "Home Screen Folders",
+      oneLiner: "Hide temptations, not texts.",
+      tried: false,
+      actionLabel: "Try It",
+      actionType: "toast",
+      actionData: "Organized like a pro!",
+    },
+  ],
+};

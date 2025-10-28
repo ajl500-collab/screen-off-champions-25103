@@ -1,5 +1,97 @@
 # Changelog - UX Refresh
 
+## Phase 6: Power-Tips Carousel - Daily Habits + Unlockables (2025-10-28)
+
+### New Files Created
+
+- **`src/features/tips/PowerTipsCarousel.tsx`**: Swipeable carousel component with navigation arrows, pagination dots, localStorage persistence, and progress tracking.
+
+- **`src/features/tips/PowerTipCard.tsx`**: Individual tip card with gradient backgrounds, unlock animations, ribbon badges, and action buttons.
+
+- **`src/pages/Tips.tsx`**: Standalone tips page with full carousel and additional context about why tips work.
+
+- **`README-TIPS.md`**: Complete documentation of carousel architecture, unlock system, action types, and integration points.
+
+### Modified Files
+
+- **`src/features/dashboard/mockData.ts`**: Added `PowerTip` interface and `mockPowerTipsData` with 5 starter tips including action types (link/toast/tooltip).
+
+- **`src/features/dashboard/Dashboard.tsx`**: Added PowerTipsCarousel as fifth section below Efficiency Explainer.
+
+- **`src/App.tsx`**: Added `/tips` route and imported Tips page component.
+
+- **`src/index.css`**: Added shimmer animation for unlocked card effect.
+
+- **`CHANGELOG.md`**: Added Phase 6 documentation.
+
+### Features Implemented
+
+- **Swipeable Carousel**: Horizontal scroll with snap points, smooth 300ms transitions
+- **Navigation**: Desktop arrows (left/right) + mobile swipe gestures
+- **Pagination Dots**: Visual indicator with active state (2px → 8px width)
+- **5 Starter Tips**: Grayscale, Notifications, Widgets, App Limits, Home Screen
+- **Action Types**: Link (opens URL), Toast (shows message), Tooltip (displays instructions)
+- **Unlock System**: Cards transition from gradient → muted with ribbon badge
+- **LocalStorage Persistence**: Unlock states survive page refreshes
+- **Progress Tracking**: "X / 5 unlocked" text below carousel
+- **XP Toast**: "+5 Efficiency XP" feedback on unlock
+- **Shimmer Effect**: Subtle gradient animation on unlocked cards
+- **Responsive Layout**: 1 card (mobile) → 2-3 cards (desktop)
+- **View All Button**: Links to dedicated `/tips` route
+
+### Copy Tone Examples
+
+| Context     | Example                                    |
+| ----------- | ------------------------------------------ |
+| Title       | "Grayscale Mode"                           |
+| One-liner   | "Make your screen less addictive."         |
+| Success     | "+5 Efficiency XP"                         |
+| Tooltip     | "Settings → Face ID & Passcode → ..."     |
+
+### Visual Design
+
+- **Default Card**: Gradient `from-primary/10 via-accent/10 to-primary/10`
+- **Unlocked Card**: `bg-muted/30` with 60% opacity
+- **Ribbon**: Green badge with check icon (top-right)
+- **Hover**: Scale 1.05x with shadow lift
+- **Animations**: 300ms transitions, shimmer effect
+
+### State Management
+
+- **LocalStorage Key**: `screenVS-power-tips-tried`
+- **Data**: Array of unlocked tip IDs `[1, 3, 5]`
+- **Functions**: `markTipTried(id)` updates state + storage
+- **Persistence**: Loads on mount, survives refresh
+
+### User Journey
+
+1. User sees carousel on Dashboard
+2. Swipes/clicks through 5 tips
+3. Clicks CTA button (e.g., "Enable")
+4. Action executes (opens link/shows toast/displays tooltip)
+5. Card updates to "unlocked" with ribbon
+6. Toast shows "+5 Efficiency XP"
+7. Progress updates "1 / 5 unlocked"
+8. User reloads page → unlocked state persists
+9. User clicks "View All →" → navigates to `/tips`
+
+### Standalone Tips Page
+
+- Full carousel with all tips
+- "Why These Work" section with detailed explanations
+- "Pro Tip" card with stacking recommendations
+- Mobile-friendly layout
+
+### Accessibility
+
+- All animations respect `prefers-reduced-motion`
+- Pagination dots have aria-labels
+- Touch targets meet 44px minimum
+- Keyboard navigation supported
+- Color contrast WCAG AA compliant
+
+---
+
 ## Phase 5: Efficiency Explainer - UI + Data Insight Component (2025-10-28)
 
 ### New Files Created

@@ -6,6 +6,7 @@ import { TodayAtAGlance } from "./TodayAtAGlance";
 import { WeeklyProgress } from "./WeeklyProgress";
 import { EfficiencyMeter } from "./EfficiencyMeter";
 import { EfficiencyExplainer } from "../insights/EfficiencyExplainer";
+import { PowerTipsCarousel } from "../tips/PowerTipsCarousel";
 import { Badge } from "@/components/ui/badge";
 
 export const Dashboard = () => {
@@ -77,6 +78,11 @@ export const Dashboard = () => {
         {/* Section 4: Efficiency Explainer */}
         <section>
           <EfficiencyExplainer />
+        </section>
+
+        {/* Section 5: Power-Tips Carousel */}
+        <section>
+          <PowerTipsCarousel />
         </section>
       </div>
     </div>

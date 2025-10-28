@@ -17,6 +17,7 @@ import Support from "./pages/Support";
 import Blog from "./pages/Blog";
 import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
+import Tips from "./pages/Tips";
 import BottomNav from "./components/BottomNav";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/support" element={<Support />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/tips" element={<Tips />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -167,6 +167,30 @@ All colors MUST be HSL.
     filter: drop-shadow(0 0 20px hsl(var(--primary) / 0.5));
   }
   
+  /* Hide scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Shimmer animation */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+  
   /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -181,7 +205,8 @@ All colors MUST be HSL.
     .animate-float,
     .animate-scale-in,
     .animate-slide-up,
-    .animate-count-up {
+    .animate-count-up,
+    .animate-shimmer {
       animation: none !important;
     }
     
