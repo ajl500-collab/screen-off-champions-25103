@@ -131,14 +131,12 @@ export const joinSquad = async (inviteCode: string) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  // Find squad by invite code
+  // Find squad by invite code via secure RPC (bypasses RLS safely)
   const { data: squad, error: squadError } = await supabase
-    .from("squads")
-    .select("*")
-    .eq("invite_code", inviteCode)
+    .rpc("get_squad_by_invite_code", { p_code: inviteCode })
     .single();
 
-  if (squadError) throw new Error("Invalid invite code");
+  if (squadError || !squad) throw new Error("Invalid invite code");
 
   // Add user as member
   const { error: memberError } = await supabase

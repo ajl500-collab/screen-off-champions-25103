@@ -651,6 +651,24 @@ export type Database = {
       }
       generate_invite_code: { Args: never; Returns: string }
       generate_squad_invite_code: { Args: never; Returns: string }
+      get_squad_by_invite_code: {
+        Args: { p_code: string }
+        Returns: {
+          created_at: string | null
+          created_by: string | null
+          emoji: string | null
+          id: string
+          invite_code: string
+          name: string
+          updated_at: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "squads"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
     }
     Enums: {
       app_category: "productive" | "unproductive" | "utility"
