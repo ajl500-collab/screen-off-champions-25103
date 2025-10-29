@@ -38,6 +38,24 @@ export type Database = {
         }
         Relationships: []
       }
+      app_categories_cache: {
+        Row: {
+          app_name: string
+          category: string | null
+          last_updated: string | null
+        }
+        Insert: {
+          app_name: string
+          category?: string | null
+          last_updated?: string | null
+        }
+        Update: {
+          app_name?: string
+          category?: string | null
+          last_updated?: string | null
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           chat_type: string
@@ -215,6 +233,41 @@ export type Database = {
         }
         Relationships: []
       }
+      invitations: {
+        Row: {
+          created_at: string | null
+          id: string
+          invitee_id: string | null
+          inviter_id: string | null
+          squad_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          invitee_id?: string | null
+          inviter_id?: string | null
+          squad_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          invitee_id?: string | null
+          inviter_id?: string | null
+          squad_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_squad_id_fkey"
+            columns: ["squad_id"]
+            isOneToOne: false
+            referencedRelation: "squads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       memberships: {
         Row: {
           id: string
@@ -240,6 +293,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "memberships_squad_id_fkey"
+            columns: ["squad_id"]
+            isOneToOne: false
+            referencedRelation: "squads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          squad_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          squad_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          squad_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_squad_id_fkey"
             columns: ["squad_id"]
             isOneToOne: false
             referencedRelation: "squads"

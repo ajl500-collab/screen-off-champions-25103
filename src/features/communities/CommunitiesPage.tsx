@@ -23,11 +23,12 @@ export const CommunitiesPage = () => {
       const squad = await createSquadMutation(name, emoji);
       await queryClient.invalidateQueries({ queryKey: ["squads"] });
 
-      // Copy invite CODE (not external links)
+      // Copy full invite LINK (not just code)
       const inviteCode = squad.invite_code;
       if (inviteCode) {
-        await navigator.clipboard.writeText(inviteCode);
-        toast.success(`Squad created! Invite code copied: ${inviteCode}`);
+        const inviteLink = `${window.location.origin}/join?code=${inviteCode}`;
+        await navigator.clipboard.writeText(inviteLink);
+        toast.success(`Squad created! Invite link copied to clipboard`);
       } else {
         toast.success(COPY.communities.toasts.created);
       }

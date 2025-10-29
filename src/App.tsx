@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import Demo from "./pages/Demo";
 import Dashboard from "./pages/Dashboard";
 import Communities from "./pages/Communities";
+import Join from "./pages/Join";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import SyncSettings from "./pages/SyncSettings";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/demo" element={<Demo />} />
             <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/join" element={<Join />} />
             <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
             <Route path="/communities" element={<AppLayout><Communities /></AppLayout>} />
             <Route path="/profile" element={<AppLayout><Profile /></AppLayout>} />

@@ -165,3 +165,24 @@ async function generateInviteCode(): Promise<string> {
   if (error) throw error;
   return data;
 }
+
+/**
+ * Send a message to a squad chat
+ */
+export const sendMessage = async (squadId: string, content: string) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const { data, error } = await supabase
+    .from("messages")
+    .insert({
+      squad_id: squadId,
+      user_id: user.id,
+      content,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};

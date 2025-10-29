@@ -278,9 +278,9 @@ export interface LeaderboardEntry {
   badges?: string[];
 }
 
-export const useLeaderboard = (squadId?: string) => {
+export const useLeaderboard = (squadId?: string, page: number = 1, pageSize: number = 50) => {
   return useQuery({
-    queryKey: ["leaderboard", squadId],
+    queryKey: ["leaderboard", squadId, page],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
@@ -318,12 +318,14 @@ export const useLeaderboard = (squadId?: string) => {
         return [] as LeaderboardEntry[];
       }
 
-      // Get profiles with efficiency scores
+      // Get profiles with efficiency scores (paginated)
+      const offset = (page - 1) * pageSize;
       const { data: profiles } = await supabase
         .from("profiles")
         .select("*")
         .in("id", userIds)
-        .order("efficiency_score", { ascending: false });
+        .order("efficiency_score", { ascending: false })
+        .range(offset, offset + pageSize - 1);
 
       if (!profiles) return [];
 
@@ -331,7 +333,7 @@ export const useLeaderboard = (squadId?: string) => {
       const entries: LeaderboardEntry[] = profiles.map((profile, index) => {
         const efficiency = profile.efficiency_score || 0;
         return {
-          rank: index + 1,
+          rank: offset + index + 1,
           userId: profile.id,
           name: profile.display_name || profile.username,
           avatarUrl: profile.avatar_emoji || "😎",
@@ -343,6 +345,76 @@ export const useLeaderboard = (squadId?: string) => {
       });
 
       return entries;
+    },
+  });
+};
+
+export interface Message {
+  id: string;
+  squad_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+}
+
+export const useMessages = (squadId: string) => {
+  return useQuery({
+    queryKey: ["messages", squadId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("squad_id", squadId)
+        .order("created_at", { ascending: true })
+        .limit(100);
+
+      if (error) throw error;
+      return (data || []) as Message[];
+    },
+    enabled: !!squadId,
+  });
+};
+
+export interface AppUsage {
+  app_name: string;
+  time_spent_minutes: number;
+  category?: string;
+}
+
+export const useTodayAppBreakdown = () => {
+  const today = format(new Date(), "yyyy-MM-dd");
+  
+  return useQuery({
+    queryKey: ["app-breakdown", today],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data: screenTime, error } = await supabase
+        .from("user_screen_time")
+        .select("app_name, time_spent_minutes")
+        .eq("user_id", user.id)
+        .eq("date", today);
+
+      if (error) throw error;
+      if (!screenTime || screenTime.length === 0) return [];
+
+      // Get app categories
+      const appNames = screenTime.map(st => st.app_name);
+      const { data: categories } = await supabase
+        .from("app_categories")
+        .select("app_name, category")
+        .in("app_name", appNames);
+
+      const categoryMap = new Map(
+        categories?.map(c => [c.app_name, c.category]) || []
+      );
+
+      return screenTime.map(st => ({
+        app_name: st.app_name,
+        time_spent_minutes: st.time_spent_minutes,
+        category: categoryMap.get(st.app_name) || "neutral",
+      })) as AppUsage[];
     },
   });
 };
