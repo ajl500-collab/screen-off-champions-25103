@@ -99,6 +99,9 @@ export const createSquad = async (name: string, emoji: string) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
+  // Generate invite code first
+  const inviteCode = await generateInviteCode();
+
   // Create squad
   const { data: squad, error: squadError } = await supabase
     .from("squads")
@@ -106,7 +109,7 @@ export const createSquad = async (name: string, emoji: string) => {
       name,
       emoji,
       created_by: user.id,
-      invite_code: await generateInviteCode(),
+      invite_code: inviteCode,
     })
     .select()
     .single();
