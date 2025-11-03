@@ -50,6 +50,8 @@ export const SquadChat = ({ squadId }: SquadChatProps) => {
 
   // Subscribe to realtime messages
   useEffect(() => {
+    if (!squadId) return;
+
     const unsubscribe = subscribeToMessages(squadId, (newMessage) => {
       // Remove optimistic message if this is our message
       setOptimisticMessages(prev => 
@@ -59,7 +61,7 @@ export const SquadChat = ({ squadId }: SquadChatProps) => {
     });
 
     return unsubscribe;
-  }, [squadId, refetch]);
+  }, [squadId]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
