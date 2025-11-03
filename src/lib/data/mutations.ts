@@ -102,21 +102,28 @@ export const createSquad = async (name: string, emoji: string) => {
   // Generate invite code first
   const inviteCode = await generateInviteCode();
 
-  // Create squad
-  const { data: squad, error: squadError } = await supabase
+  // Insert squad WITHOUT selecting the row to avoid RLS SELECT on returning
+  const { error: insertError } = await supabase
     .from("squads")
     .insert({
       name,
       emoji,
       created_by: user.id,
       invite_code: inviteCode,
-    })
-    .select()
+    });
+
+  if (insertError) throw insertError;
+
+  // Fetch the created squad via secure RPC (bypasses RLS for SELECT)
+  const { data: squad, error: fetchError } = await supabase
+    .rpc("get_squad_by_invite_code", { p_code: inviteCode })
     .single();
 
-  if (squadError) throw squadError;
+  if (fetchError || !squad) {
+    throw fetchError || new Error("Unable to fetch created squad");
+  }
 
-  // Add creator as member
+  // Add creator as member (will satisfy SELECT policies going forward)
   const { error: memberError } = await supabase
     .from("memberships")
     .insert({
