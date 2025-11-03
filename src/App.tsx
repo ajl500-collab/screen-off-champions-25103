@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { OnboardingProvider } from "@/features/onboarding/OnboardingContext";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Demo from "./pages/Demo";
@@ -31,12 +32,13 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => (
 );
 
 const App = () => (
-  <TooltipProvider>
-      <OnboardingProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
+  <ErrorBoundary>
+    <TooltipProvider>
+        <OnboardingProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/demo" element={<Demo />} />
@@ -56,10 +58,11 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </OnboardingProvider>
-    </TooltipProvider>
+            </Routes>
+          </BrowserRouter>
+        </OnboardingProvider>
+      </TooltipProvider>
+  </ErrorBoundary>
 );
 
 export default App;

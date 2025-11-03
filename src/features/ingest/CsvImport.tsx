@@ -6,6 +6,7 @@ import { bulkUpsertDailyUsage } from "@/lib/data/mutations";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Upload } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 interface CsvRow {
   date: string;
@@ -74,6 +75,7 @@ export const CsvImport = () => {
       await queryClient.invalidateQueries({ queryKey: ["weekly-usage"] });
       await queryClient.invalidateQueries({ queryKey: ["streak"] });
 
+      trackEvent("csv_imported", { entries: preview.length });
       toast.success(`Imported ${preview.length} entries!`);
       setPreview([]);
     } catch (error) {

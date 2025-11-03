@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { moderateText } from "@/lib/moderation";
 import { checkChatRateLimit } from "@/lib/rateLimit";
 import { format } from "date-fns";
+import { trackEvent } from "@/lib/analytics";
 
 interface SquadChatProps {
   squadId: string;
@@ -99,6 +100,7 @@ export const SquadChat = ({ squadId }: SquadChatProps) => {
 
     try {
       await sendMessageMutation(squadId, content);
+      trackEvent("message_sent", { squad_id: squadId, length: content.length });
       // Success - realtime will handle adding the real message
     } catch (error: any) {
       console.error("Failed to send message:", error);

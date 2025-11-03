@@ -10,6 +10,7 @@ import { useConfetti } from "@/hooks/useConfetti";
 import { toast } from "sonner";
 import { COPY } from "@/lib/copy";
 import { Plus, Link } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 
 export const CommunitiesPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -29,10 +30,12 @@ export const CommunitiesPage = () => {
         const inviteLink = `${window.location.origin}/join?code=${inviteCode}`;
         await navigator.clipboard.writeText(inviteLink);
         toast.success(`Squad created! Invite link copied to clipboard`);
+        trackEvent("invite_copied", { squad_name: name });
       } else {
         toast.success(COPY.communities.toasts.created);
       }
 
+      trackEvent("squad_created", { squad_name: name, emoji });
       celebrate();
       setShowCreateModal(false);
     } catch (error) {
@@ -46,6 +49,7 @@ export const CommunitiesPage = () => {
       await joinSquadMutation(inviteCode);
       await queryClient.invalidateQueries({ queryKey: ["squads"] });
 
+      trackEvent("squad_joined", { invite_code: inviteCode });
       celebrate();
       toast.success("Successfully joined squad!");
       setShowJoinModal(false);

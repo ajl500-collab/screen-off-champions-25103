@@ -18,6 +18,7 @@ import { subDays, format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { trackEvent } from "@/lib/analytics";
 
 export const EfficiencyExplainer = () => {
   // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
@@ -396,7 +397,13 @@ export const EfficiencyExplainer = () => {
             </Button>
             <Button
               variant="outline"
-              onClick={() => setShowApps(!showApps)}
+              onClick={() => {
+                const newState = !showApps;
+                setShowApps(newState);
+                if (newState) {
+                  trackEvent("app_breakdown_viewed");
+                }
+              }}
               className="flex-1 gap-2"
             >
               {showApps ? (

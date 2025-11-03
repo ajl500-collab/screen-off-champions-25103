@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/analytics";
 
 interface AppEntry {
   id: string;
@@ -57,6 +58,7 @@ export const ManualTimeEntry = () => {
       return;
     }
 
+    trackEvent("manual_entry_started", { app_count: validApps.length });
     setLoading(true);
 
     try {
@@ -110,6 +112,10 @@ export const ManualTimeEntry = () => {
       await queryClient.invalidateQueries({ queryKey: ["streak"] });
 
       toast.success(`${result.apps_processed} apps categorized and saved!`);
+      trackEvent("manual_entry_completed", { 
+        app_count: result.apps_processed,
+        source: "manual"
+      });
       
       // Reset form
       setApps([{ id: "1", app: "", minutes: "" }]);

@@ -35,9 +35,16 @@ export const JoinSquadModal = ({
 
     // Extract code from link if they paste a full link
     let codeToUse = inviteCode.trim();
-    if (codeToUse.includes("/join/")) {
+    
+    // Support both /join?code=ABC123 and /join/ABC123 formats
+    if (codeToUse.includes("/join?code=")) {
+      codeToUse = codeToUse.split("/join?code=")[1];
+    } else if (codeToUse.includes("/join/")) {
       codeToUse = codeToUse.split("/join/")[1];
     }
+    
+    // Remove any query params or fragments
+    codeToUse = codeToUse.split("?")[0].split("#")[0];
 
     const success = await onJoinSquad(codeToUse);
     
